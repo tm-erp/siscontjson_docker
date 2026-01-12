@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  siscont-app:
+    build: .
+    container_name: siscontExportJson
+    # Nuevo comando para habilitar la recarga automática
+    command: uvicorn main:fastapi_app --host 0.0.0.0 --port 9801 --reload
+    
+    # Mapear puerto del host al contenedor
+    ports:
+      - "9801:9801"
+    
+    # Volumen para desarrollo (Hot Reload)
+    volumes:
+      - .:/app
+    
+    # Variables de entorno
+    env_file:
+      - .env
+    
+    # Reiniciar siempre, excepto cuando se apague manualmente
+    restart: unless-stopped
+    
+    # Configuración de locale para pyodbc
+    environment:
+      - LC_ALL=C.UTF-8
+      - LANG=C.UTF-8
+
+    extra_hosts:
+    - "host.docker.internal:host-gateway"
