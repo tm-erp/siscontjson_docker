@@ -9,7 +9,7 @@ services:
     ports:
       - "9801:9801"
     volumes:
-      - .:/app  # Hot reload Sincroniza los rchivos en el contenedor
+      - .:/app  # Hot reload Sincroniza los archivos en el contenedor
     env_file:
       - .env
     restart: unless-stopped
