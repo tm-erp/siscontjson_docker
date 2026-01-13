@@ -232,7 +232,7 @@ def render_module_ui(
     mostrar_func,
     exportar_individual_func,
     exportar_todas_func,
-    descargar_csv_func,
+    descargar_csv_func=None,  # Indica que este boton es opcional
 ):
     """
     Genera la interfaz de usuario repetitiva (títulos, botón de exportar todo, lista de tablas).
