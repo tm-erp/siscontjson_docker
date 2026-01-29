@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  siscont-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: siscontExportJson
+    ports:
+      - "9801:9801"
+    env_file:
+      - .env
+    restart: unless-stopped
+    environment:
+      - LC_ALL=C.UTF-8
+      - LANG=C.UTF-8
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

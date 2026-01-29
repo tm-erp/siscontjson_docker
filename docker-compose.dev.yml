@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  siscont-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: siscontExportJsonDev
+    ports:
+      - "9801:9801"
+    volumes:
+      - .:/app  # Hot reload Sincroniza los archivos en el contenedor
+    env_file:
+      - .env
+    restart: unless-stopped
+    environment:
+      - LC_ALL=C.UTF-8
+      - LANG=C.UTF-8
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
