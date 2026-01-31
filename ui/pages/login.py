@@ -2,22 +2,20 @@
 from datetime import datetime
 from nicegui import app, ui
 
-from state.store import store
 from config import get_settings
 from db.db_connection import create_db_managerAlchemy, test_connection
-# from db.db_manager import AppState, ConexionParams
-from db.db_manager import  ConexionParams
+from db.db_manager import ConexionParams
 
-def connection_form(request):
+
+def connection_form():
     settings = get_settings()
-    print('Entra a Connection form')
+    print("Entra a Connection form")
 
     with ui.column().classes(
-            "w-full h-screen flex items-center justify-center bg-gray-100 p-4"
+        "w-full h-screen flex items-center justify-center bg-gray-100 p-4"
     ):
         with ui.card().classes("w-full max-w-md p-8 shadow-2xl"):
-            ui.label("Conectar a la Base de Datos").classes(
-                "text-h5 text-center")
+            ui.label("Conectar a la Base de Datos").classes("text-h5 text-center")
 
             ip_input = ui.input("IP del servidor/Instancia SQL").classes("w-full mb-4")
             database_input = ui.input("Base de datos").classes("w-full mb-4")
@@ -28,9 +26,9 @@ def connection_form(request):
 
             async def connect():
                 if (
-                        not ip_input.value
-                        or not password_input.value
-                        or not database_input.value
+                    not ip_input.value
+                    or not password_input.value
+                    or not database_input.value
                 ):
                     error_label.text = "Todos los campos son requeridos"
                     return
@@ -46,33 +44,31 @@ def connection_form(request):
                         password=password_input.value,
                         database=database_input.value,
                     )
-                    print('Entra a params')
-                    #store.db_params = params  # guardando como instancia de ConexionParams
+                    print("Entra a params")
                     # Probar la conexión usando SQLAlchemy
                     if test_connection(params):
-                        # Crear DatabaseManager para almacenar en el store
+                        # Crear DatabaseManager para la sesión del usuario
                         db_manager = create_db_managerAlchemy(params)
 
-                        store.connected = True
-                        store.db_params = params
-                        store.db_manager = db_manager
-                        store.ip_server = ip_input.value
-
-                        # ✅ Guardar estado persistente del usuario
+                        # Guardar estado persistente del usuario en sesión
                         app.storage.user["connected"] = True
                         app.storage.user["db_params"] = params.model_dump()
-                        app.storage.user["ip_server"] = store.ip_server
-                        app.storage.user["server_ip_display"] = store.ip_server
+                        app.storage.user["db_manager"] = db_manager
+                        app.storage.user["ip_server"] = ip_input.value
+                        app.storage.user["server_ip_display"] = ip_input.value
                         app.storage.user["last_activity"] = datetime.now().isoformat()
 
                         ui.notify("Conexión exitosa!", type="positive")
                         ui.navigate.to("/")
                     else:
                         error_label.text = "No se pudo conectar a la base de datos"
-                            
+
                 except Exception as e:
                     error_label.text = f"Error de conexión: {str(e)}"
-                    store.reset()
+                    # Limpiar estado de sesión del usuario en caso de error
+                    app.storage.user["connected"] = False
+                    app.storage.user["db_params"] = None
+                    app.storage.user["db_manager"] = None
                     ui.notify("Error al conectar", type="negative")
                 finally:
                     spinner.delete()  # Esto oculta el spinner siempre

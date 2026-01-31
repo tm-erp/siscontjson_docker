@@ -18,10 +18,10 @@ router = APIRouter()
     tags=["COSTO"],
 )
 
-async def get_centro_costo_endpoint(params: ConexionParams, export: bool = False):
+async def get_centro_costo_endpoint(params: ConexionParams):
     try:
         with create_db_managerAlchemy(params) as db:
-            data = costo.get_centro_costo(db, export=export)
+            data = costo.get_centro_costo(db)
             return JSONResponse(content=data)
     except Exception as e:
         raise HTTPException(

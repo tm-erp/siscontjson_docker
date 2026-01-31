@@ -20,11 +20,6 @@ from api import (
 # from middleware.auth_middleware import AuthMiddleware
 from ui.pages import login, main_page
 
-# from db.db_manager import AppState
-# store = AppState()
-
-from state.store import store
-
 # Configuración FastAPI
 fastapi_app = FastAPI(title=config.APP_TITLE)
 
@@ -59,10 +54,12 @@ ui.run_with(
 # Configurar rutas UI
 @ui.page("/")
 async def index(client):
-    if not app.storage.user.get("connected"):
-        login.connection_form(store)
-    else:
-        main_page.show()
+    # Asegurar que usamos el contexto del cliente explícitamente
+    with client:
+        if not app.storage.user.get("connected"):
+            login.connection_form()
+        else:
+            main_page.show()
 
 
 # Iniciar con: uvicorn main:fastapi_app --reload

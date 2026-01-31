@@ -1,0 +1,58 @@
+Voy a investigar el [base_view.py](cci:7://file:///home/niurka/Proyectos-TM/docker/siscontjson_docker/ui/pages/modules/base_view.py:0:0-0:0) ya que es donde se renderizan los módulos y podría tener estado compartido:
+
+Voy a revisar una vista de módulo específica para ver si hay estado compartido:
+
+Voy a buscar cualquier otro estado global en el código UI que pueda estar causando el problema:
+
+Voy a revisar específicamente si hay algún problema con los callbacks o closures en el sidebar:
+
+
+
+
+
+Voy a revisar el componente header para ver si hay algún estado compartido allí:
+
+Déjame eliminar la función [change_module](cci:1://file:///home/niurka/Proyectos-TM/docker/siscontjson_docker/ui/pages/main_page.py:114:0-126:61) que ya no se usa y podría estar causando confusión:
+
+Voy a revisar si hay algún problema con cómo se maneja el `client` en la página principal:
+
+Déjame buscar si hay algún estado a nivel de módulo en las vistas que pueda estar causando interferencias:
+
+Voy a revisar si hay algún problema con los imports o alguna variable que se esté compartiendo inadvertidamente:
+
+Voy a revisar si hay algún problema con los closures en [base_view.py](cci:7://file:///home/niurka/Proyectos-TM/docker/siscontjson_docker/ui/pages/modules/base_view.py:0:0-0:0):
+
+Voy a revisar más detalladamente las vistas de módulos para ver si hay algún estado compartido que no he detectado:
+
+Voy a verificar si hay algún problema con `app.storage.user` o si hay código que esté leyendo `current_view` de forma global:
+
+Voy a revisar el estado actual de [main_page.py](cci:7://file:///home/niurka/Proyectos-TM/docker/siscontjson_docker/ui/pages/main_page.py:0:0-0:0) para verificar que todo esté correcto:
+
+Déjame revisar si hay algún problema con cómo se llaman las funciones de las vistas. Voy a verificar `inicio_view`:
+
+Voy a actualizar la lista de tareas y revisar si hay algún problema con el `client` en NiceGUI:
+
+Voy a revisar si el problema está en cómo se maneja el parámetro `client` en la página principal de NiceGUI:
+
+Voy a probar un enfoque diferente. En NiceGUI, el parámetro `client` es importante para asegurar el aislamiento. Voy a modificar [main.py](cci:7://file:///home/niurka/Proyectos-TM/docker/siscontjson_docker/main.py:0:0-0:0) para pasar el contexto del cliente explícitamente:
+
+
+
+He realizado varios cambios para eliminar el estado compartido entre clientes:
+
+1. **Eliminado `sidebar_elements` global** - Ahora no se almacenan referencias a elementos UI
+2. **Eliminado `update_active_module`** - Ya no se actualizan clases CSS globalmente  
+3. **Reemplazado `@ui.refreshable`** - Usando contenedores por cliente con closures
+4. **Agregado `with client:`** - Aislamiento explícito del contexto del cliente
+
+El código ahora usa:
+- **Closures** en lugar de almacenar referencias UI en `app.storage.user`
+- **Variables locales** para `content_container` en lugar de storage compartido
+- **Contexto del cliente** explícito en [main.py](cci:7://file:///home/niurka/Proyectos-TM/docker/siscontjson_docker/main.py:0:0-0:0)
+
+Si el problema persiste, podría ser necesario investigar:
+- Si hay estado compartido en las **vistas de módulos específicas**
+- Si hay algún **JavaScript compartido** causando interferencias
+- Si el problema está en cómo **NiceGUI maneja el storage** en tu versión específica
+
+¿Puedes probar si con estos cambios el problema sigue ocurriendo?

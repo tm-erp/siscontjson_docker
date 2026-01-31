@@ -1,0 +1,46 @@
+
+
+Veo el problema. El proyecto usa un singleton [AppState](cci:2://file:///home/niurka/Proyectos-TM/docker/siscontjson_docker/db/db_manager.py:22:0-39:33) en [state/store.py](cci:7://file:///home/niurka/Proyectos-TM/docker/siscontjson_docker/state/store.py:0:0-0:0) que se comparte entre todos los clientes. Cuando múltiples usuarios se conectan, las conexiones de unos afectan a otros.
+
+Ya existe `app.storage.user` de NiceGUI para almacenamiento por sesión. Necesito migrar de `store` global a `app.storage.user`.
+
+
+
+Hay referencias restantes en [main.py](cci:7://file:///home/niurka/Proyectos-TM/docker/siscontjson_docker/main.py:0:0-0:0) y [cobros_pagos_view.py](cci:7://file:///home/niurka/Proyectos-TM/docker/siscontjson_docker/ui/pages/modules/cobros_pagos_view.py:0:0-0:0). Necesito revisar y limpiar estos archivos.
+
+
+Ya no hay más referencias a `state/store`. Puedo eliminar el directorio [state/](cci:9://file:///home/niurka/Proyectos-TM/docker/siscontjson_docker/state:0:0-0:0) y opcionalmente limpiar [AppState](cci:2://file:///home/niurka/Proyectos-TM/docker/siscontjson_docker/db/db_manager.py:22:0-39:33) de [db_manager.py](cci:7://file:///home/niurka/Proyectos-TM/docker/siscontjson_docker/db/db_manager.py:0:0-0:0) si no se usa en otro lugar.
+
+
+La migración de variables globales a variables de sesión está completa.
+
+********************************************************************************
+## Resumen de cambios realizados
+
+### 1. **[services/base_client.py](cci:7://file:///home/niurka/Proyectos-TM/docker/siscontjson_docker/services/base_client.py:0:0-0:0)**
+- Reemplazó `from state.store import store` con `from nicegui import app`
+- [get_current_conexion_params()](cci:1://file:///home/niurka/Proyectos-TM/docker/siscontjson_docker/services/base_client.py:9:0-22:5) ahora obtiene `db_params` desde `app.storage.user`
+- [obtener_datos_tabla_base()](cci:1://file:///home/niurka/Proyectos-TM/docker/siscontjson_docker/services/base_client.py:25:0-65:50) ahora obtiene `selected_module` desde `app.storage.user`
+
+### 2. **Clientes de servicios limpiados** ([activos_fijos_client.py](cci:7://file:///home/niurka/Proyectos-TM/docker/siscontjson_docker/services/activos_fijos_client.py:0:0-0:0), [cuentas_client.py](cci:7://file:///home/niurka/Proyectos-TM/docker/siscontjson_docker/services/cuentas_client.py:0:0-0:0), [costo_client.py](cci:7://file:///home/niurka/Proyectos-TM/docker/siscontjson_docker/services/costo_client.py:0:0-0:0), [cp_client.py](cci:7://file:///home/niurka/Proyectos-TM/docker/siscontjson_docker/services/cp_client.py:0:0-0:0))
+- Eliminados imports de `store` y funciones duplicadas de [get_current_conexion_params](cci:1://file:///home/niurka/Proyectos-TM/docker/siscontjson_docker/services/base_client.py:9:0-22:5)
+- Ahora usan la función base centralizada de [base_client.py](cci:7://file:///home/niurka/Proyectos-TM/docker/siscontjson_docker/services/base_client.py:0:0-0:0)
+
+### 3. **[ui/pages/login.py](cci:7://file:///home/niurka/Proyectos-TM/docker/siscontjson_docker/ui/pages/login.py:0:0-0:0)**
+- Eliminado import de `store`
+- Función [connection_form()](cci:1://file:///home/niurka/Proyectos-TM/docker/siscontjson_docker/ui/pages/login.py:8:0-75:74) ya no recibe parámetro `request`
+- Los datos de conexión se guardan directamente en `app.storage.user`
+- En caso de error, se limpia el estado de sesión del usuario
+
+### 4. **[main.py](cci:7://file:///home/niurka/Proyectos-TM/docker/siscontjson_docker/main.py:0:0-0:0)**
+- Eliminados imports de `state.store`
+- [login.connection_form()](cci:1://file:///home/niurka/Proyectos-TM/docker/siscontjson_docker/ui/pages/login.py:8:0-75:74) se llama sin argumentos
+
+### 5. **[ui/pages/modules/cobros_pagos_view.py](cci:7://file:///home/niurka/Proyectos-TM/docker/siscontjson_docker/ui/pages/modules/cobros_pagos_view.py:0:0-0:0)**
+- Eliminado import no utilizado de `store`
+
+### 6. **Eliminado directorio [state/](cci:9://file:///home/niurka/Proyectos-TM/docker/siscontjson_docker/state:0:0-0:0)**
+- El directorio completo [state/](cci:9://file:///home/niurka/Proyectos-TM/docker/siscontjson_docker/state:0:0-0:0) fue eliminado ya que ya no se usa
+
+## Cómo funciona ahora
+Cada cliente que se conecta tiene su propia sesión aislada mediante `app.storage.user` de NiceGUI. Los datos de conexión (`db_params`, `connected`, `ip_server`, etc.) se almacenan por usuario, evitando que las conexiones de un cliente afecten a otros.

@@ -1,14 +1,5 @@
 from typing import Any
 
-import httpx
-
-from config import get_module_api_url
-from db.db_manager import ConexionParams
-from state.store import \
-    store  # Importas la instancia ya inicializada y compartida
-
-from typing import Any
-
 # Importar la función base y la función de utilidad
 from .base_client import obtener_datos_tabla_base, get_current_conexion_params
 
@@ -30,6 +21,7 @@ DOCTYPE_NAME_MAP = {
 }
 
 get_current_conexion_params = get_current_conexion_params
+
 
 async def obtener_datos_tabla(nombre_tabla: str, modulo: str | None = None) -> Any:
     """

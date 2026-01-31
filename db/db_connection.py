@@ -40,10 +40,7 @@ def create_engine_from_params(params: ConexionParams) -> Engine:
     )
 
     # Crear URL de SQLAlchemy con pyodbc
-    url_object = URL.create(
-        'mssql+pyodbc',
-        query={"odbc_connect": connection_string}
-    )
+    url_object = URL.create("mssql+pyodbc", query={"odbc_connect": connection_string})
 
     try:
         # Crear el motor de SQLAlchemy
@@ -54,16 +51,16 @@ def create_engine_from_params(params: ConexionParams) -> Engine:
         # Mapeo de errores comunes
         if "Cannot open database" in error_msg:
             raise Exception(
-                "La base de datos especificada no existe o no se puede acceder.")
+                "La base de datos especificada no existe o no se puede acceder."
+            )
         elif "Login failed for user" in error_msg:
-            raise Exception(
-                "Error de autenticación: usuario o contraseña incorrectos.")
+            raise Exception("Error de autenticación: usuario o contraseña incorrectos.")
         elif "Unable to connect" in error_msg or "connection" in error_msg.lower():
             raise Exception(
-                "No se puede conectar al servidor. Verifique la IP y el puerto.")
+                "No se puede conectar al servidor. Verifique la IP y el puerto."
+            )
         else:
-            raise Exception(
-                f"Error de conexión a la base de datos: {error_msg}")
+            raise Exception(f"Error de conexión a la base de datos: {error_msg}")
 
 
 @contextmanager

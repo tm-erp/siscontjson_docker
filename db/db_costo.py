@@ -8,7 +8,7 @@ from utils.jsons_utils import export_table_to_json, \
 
 # Para obtener los centros de costo y poniendo alias con el nombre
 # del campo en el doctype
-def get_centro_costo(db, export: bool = False):
+def get_centro_costo(db):
     doctype_name = "Cost Center"
     sqlserver_name = "SCCCENTROCOSTO"
     module_name = "Setup"
@@ -16,7 +16,7 @@ def get_centro_costo(db, export: bool = False):
     field_mapping = [
         # Campos del doctype principal (Centro Costo)
         ("cost_center_number", ("OC.OCostCodigo", 'string')),
-        ("cost_center_name", ("OC.OCostDescrip", 'string')),
+        ("cost_center_name", ("OC.OCostDescrip", 'string')),        
         ("parent_cost_center", ("DE.DatEntNom", 'string'))  #centro de Costo padre
     ]
 
@@ -26,13 +26,13 @@ def get_centro_costo(db, export: bool = False):
     ] + ["""(SELECT TOP 1 DatEntNom FROM SMGDatosEntidad) AS parent_cost_center
     """]
 
-    query = f"""
-       SELECT
+    query = f"""    
+       SELECT 
            {', '.join(select_clauses)}
         FROM SCCOBJCOSTO as OC INNER JOIN
         SCCCENTROCOSTO as CC ON OC.OCostCodigo = CC.CcostOCcodigo CROSS JOIN
                SMGDATOSENTIDAD as DE
-    """
+    """   
 
     return export_table_to_json(
         db=db,
@@ -40,6 +40,5 @@ def get_centro_costo(db, export: bool = False):
         sqlserver_name=sqlserver_name,
         module_name=module_name,
         field_mapping=field_mapping,
-        table_query=query,
-        save=export
+        table_query=query
     )

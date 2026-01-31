@@ -6,6 +6,11 @@ from fastapi.responses import JSONResponse
 from db import db_nomina as nomina
 from db.db_connection import create_db_managerAlchemy
 from db.db_manager import ConexionParams
+# from db.db_nomina import (
+#     get_categorias_ocupacionales,
+#     get_relaciones_trabajadores,
+#     get_trabajadores,
+# )
 
 from fastapi import Query
 
@@ -18,10 +23,10 @@ router = APIRouter()
     description="Muestra listado de los trabajadores segun campos seleccionados",
     tags=["Nómina"],
 )
-async def get_trabajadores_endpoint(params: ConexionParams, export: bool = Query(False)):
+async def get_trabajadores_endpoint(params: ConexionParams):
     try:
         with create_db_managerAlchemy(params) as db:
-            data = nomina.get_trabajadores(db, export=export)
+            data = nomina.get_trabajadores(db)
             return JSONResponse(content=data)
     except Exception as e:
         raise HTTPException(
@@ -30,6 +35,23 @@ async def get_trabajadores_endpoint(params: ConexionParams, export: bool = Query
         )
 
 
+# @router.post(
+#     "/relaciones-trabajadores",
+#     summary="Muestra relacion de la tabla trabajadores con las demas",
+#     description="Muestra relacion entre las tablas con la de los trabajadores ",
+#     tags=["Nómina"],
+# )
+# async def get_relaciones_trabajadores_endpoint(params: ConexionParams):
+#     try:
+#         with create_db_managerAlchemy(params) as db:
+#             data = nomina.get_relaciones_trabajadores(db)
+#             return JSONResponse(content=data)
+#     except Exception as e:
+#         raise HTTPException(
+#             status_code=500,
+#             detail=f"Error al obtener relaciones entre tablas: {str(e)}",
+#         )
+
 
 @router.post(
     "/categorias-ocupacionales",
@@ -37,10 +59,10 @@ async def get_trabajadores_endpoint(params: ConexionParams, export: bool = Query
     description="Muestra las categorías ocupacionales activas",
     tags=["Nómina"],
 )
-async def get_categorias_endpoint(params: ConexionParams, export: bool = Query(False)):
+async def get_categorias_endpoint(params: ConexionParams):
     try:
         with create_db_managerAlchemy(params) as db:
-            data = nomina.get_categorias_ocupacionales(db, export=export)
+            data = nomina.get_categorias_ocupacionales(db)
             return JSONResponse(content=data)
     except Exception as e:
         raise HTTPException(
@@ -55,10 +77,10 @@ async def get_categorias_endpoint(params: ConexionParams, export: bool = Query(F
     description="Muestra los cargos de los trabajadores",
     tags=["Nómina"],
 )
-async def get_cargos_trabajadores_endpoint(params: ConexionParams, export: bool = Query(False)):
+async def get_cargos_trabajadores_endpoint(params: ConexionParams):
     try:
         with create_db_managerAlchemy(params) as db:
-            data = nomina.get_cargos_trabajadores(db, export=export)
+            data = nomina.get_cargos_trabajadores(db)
             return JSONResponse(content=data)
     except Exception as e:
         raise HTTPException(
@@ -73,10 +95,10 @@ async def get_cargos_trabajadores_endpoint(params: ConexionParams, export: bool 
     description="Muestra los tipos de los trabajadores",
     tags=["Nómina"],
 )
-async def get_tipos_trabajadores_endpoint(params: ConexionParams, export: bool = Query(False)):
+async def get_tipos_trabajadores_endpoint(params: ConexionParams):
     try:
         with create_db_managerAlchemy(params) as db:
-            data = nomina.get_tipos_trabajadores(db, export=export)
+            data = nomina.get_tipos_trabajadores(db)
             return JSONResponse(content=data)
     except Exception as e:
         raise HTTPException(
@@ -91,10 +113,10 @@ async def get_tipos_trabajadores_endpoint(params: ConexionParams, export: bool =
     description="Muestra los tipos de los retenciones",
     tags=["Nómina"],
 )
-async def get_tipos_retenciones_endpoint(params: ConexionParams, export: bool = Query(False)):
+async def get_tipos_retenciones_endpoint(params: ConexionParams):
     try:
         with create_db_managerAlchemy(params) as db:
-            data = nomina.get_tipos_retenciones(db, export=export)
+            data = nomina.get_tipos_retenciones(db)
             return JSONResponse(content=data)
     except Exception as e:
         raise HTTPException(
@@ -109,10 +131,10 @@ async def get_tipos_retenciones_endpoint(params: ConexionParams, export: bool = 
     description="Muestra los pensionados",
     tags=["Nómina"],
 )
-async def get_pensionados_endpoint(params: ConexionParams, export: bool = Query(False)):
+async def get_pensionados_endpoint(params: ConexionParams):
     try:
         with create_db_managerAlchemy(params) as db:
-            data = nomina.get_pensionados(db, export=export)
+            data = nomina.get_pensionados(db)
             return JSONResponse(content=data)
     except Exception as e:
         raise HTTPException(
@@ -127,10 +149,10 @@ async def get_pensionados_endpoint(params: ConexionParams, export: bool = Query(
     description="Muestra las tasas de destajos",
     tags=["Nómina"],
 )
-async def get_tasas_destajos_endpoint(params: ConexionParams, export: bool = Query(False)):
+async def get_tasas_destajos_endpoint(params: ConexionParams):
     try:
         with create_db_managerAlchemy(params) as db:
-            data = nomina.get_tasas_destajos(db, export=export)
+            data = nomina.get_tasas_destajos(db)
             return JSONResponse(content=data)
     except Exception as e:
         raise HTTPException(
@@ -145,10 +167,10 @@ async def get_tasas_destajos_endpoint(params: ConexionParams, export: bool = Que
     description="Muestra los colectivos",
     tags=["Nómina"],
 )
-async def get_colectivos_endpoint(params: ConexionParams, export: bool = Query(False)):
+async def get_colectivos_endpoint(params: ConexionParams):
     try:
         with create_db_managerAlchemy(params) as db:
-            data = nomina.get_colectivos(db, export=export)
+            data = nomina.get_colectivos(db)
             return JSONResponse(content=data)
     except Exception as e:
         raise HTTPException(
@@ -163,10 +185,10 @@ async def get_colectivos_endpoint(params: ConexionParams, export: bool = Query(F
     description="Muestra los departamentos",
     tags=["Nómina"],
 )
-async def get_departamentos_endpoint(params: ConexionParams, export: bool = Query(False)):
+async def get_departamentos_endpoint(params: ConexionParams):
     try:
         with create_db_managerAlchemy(params) as db:
-            data = nomina.get_departamentos(db, export=export)
+            data = nomina.get_departamentos(db)
             return JSONResponse(content=data)
     except Exception as e:
         raise HTTPException(
@@ -181,10 +203,10 @@ async def get_departamentos_endpoint(params: ConexionParams, export: bool = Quer
     description="Muestra Submayor de Vacaciones",
     tags=["Nómina"],
 )
-async def get_submayor_vacaciones_endpoint(params: ConexionParams, export: bool = Query(False)):
+async def get_submayor_vacaciones_endpoint(params: ConexionParams):
     try:
         with create_db_managerAlchemy(params) as db:
-            data = nomina.get_submayor_vacaciones(db, export=export)
+            data = nomina.get_submayor_vacaciones(db)
             return JSONResponse(content=data)
     except Exception as e:
         raise HTTPException(
@@ -200,10 +222,10 @@ async def get_submayor_vacaciones_endpoint(params: ConexionParams, export: bool 
     description="Muestra Submayor de Salarios No Reclamados",
     tags=["Nómina"],
 )
-async def get_submayor_salarios_no_reclamados_endpoint(params: ConexionParams, export: bool = Query(False)):
+async def get_submayor_salarios_no_reclamados_endpoint(params: ConexionParams):
     try:
         with create_db_managerAlchemy(params) as db:
-            data = nomina.get_submayor_salarios_no_reclamados(db, export=export)
+            data = nomina.get_submayor_salarios_no_reclamados(db)
             return JSONResponse(content=data)
     except Exception as e:
         raise HTTPException(
@@ -220,10 +242,10 @@ async def get_submayor_salarios_no_reclamados_endpoint(params: ConexionParams, e
     description="Muestra Pagos de los trabajadores SC408",
     tags=["Nómina"],
 )
-async def get_corte_sc408_endpoint(params: ConexionParams, export: bool = Query(False)):
+async def get_corte_sc408_endpoint(params: ConexionParams):
     try:
         with create_db_managerAlchemy(params) as db:
-            data = nomina.get_corte_sc408(db, export=export)
+            data = nomina.get_corte_sc408(db)
             return JSONResponse(content=data)
     except Exception as e:
         raise HTTPException(
@@ -239,10 +261,10 @@ async def get_corte_sc408_endpoint(params: ConexionParams, export: bool = Query(
     description="Muestra los grupos y escala salarial de los trabajadores",
     tags=["Nómina"],
 )
-async def get_grupo_salarial_endpoint(params: ConexionParams, export: bool = Query(False)):
+async def get_grupo_salarial_endpoint(params: ConexionParams):
     try:
         with create_db_managerAlchemy(params) as db:
-            data = nomina.get_grupo_salarial(db, export=export)
+            data = nomina.get_grupo_salarial(db)
             return JSONResponse(content=data)
     except Exception as e:
         raise HTTPException(
@@ -258,10 +280,10 @@ async def get_grupo_salarial_endpoint(params: ConexionParams, export: bool = Que
     description="Muestra los puestos de trabajos, grupo salarial por departamento",
     tags=["Nómina"],
 )
-async def get_puestos_trabajos_endpoint(params: ConexionParams, export: bool = Query(False)):
+async def get_puestos_trabajos_endpoint(params: ConexionParams):
     try:
         with create_db_managerAlchemy(params) as db:
-            data = nomina.get_puestos_trabajos(db, export=export)
+            data = nomina.get_puestos_trabajos(db)
             return JSONResponse(content=data)
     except Exception as e:
         raise HTTPException(

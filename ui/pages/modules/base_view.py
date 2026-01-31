@@ -45,7 +45,7 @@ async def mostrar_tabla_base(nombre_logico: str, obtener_datos_func):
         ui.notify(f"{nombre_logico} consultado correctamente.")
 
         if not records or not all(isinstance(r, dict) for r in records):
-            ui.notify(f"No hay datos que mostrar para {nombre_logico}", type="negative")
+            ui.notify(f"Datos inválidos para {nombre_logico}", type="negative")
             return
 
         # Lógica de NiceGUI para mostrar tabla (idéntica en ambas vistas)
@@ -115,7 +115,7 @@ async def procesar_tabla_individual_base(
         ui.notify(f"Preparando descarga de {nombre_logico}...")
         result = await obtener_datos_func(nombre_logico)
 
-        if not result or not result["data"]:
+        if not result:
             ui.notify(f"No hay datos para exportar en {nombre_logico}.", type="warning")
             return
 

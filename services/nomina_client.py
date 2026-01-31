@@ -42,7 +42,7 @@ DOCTYPE_NAME_MAP = {
     "Grupo Salarial": "Salary Group",
     "Puestos de Trabajos": "Job Position",
     "Configuracion Contribuciones e Impuestos": "Contributions and Taxes Setting",
-    "Asignacion Contribuciones e Impuestos": "Allocation Contribution Items",
+    "Asignacion Contribuciones e Impuestos": "Allocation of Contributions and Taxes",
 }
 
 

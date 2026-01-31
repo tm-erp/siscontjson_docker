@@ -2,24 +2,24 @@
 from typing import Any, Dict
 
 import httpx
+from nicegui import app
 from db.db_manager import ConexionParams
 from config import get_module_api_url
-from state.store import store
 
 
 def get_current_conexion_params() -> ConexionParams:
     """
-    Accede a la configuración de conexión global de 'store'.
-    Reemplaza la función idéntica en ambos clientes.
+    Accede a la configuración de conexión del usuario actual desde app.storage.user.
     """
-    print("store en get_current_conexion_params:", store.db_params)
-    if not store.db_params:
+    db_params = app.storage.user.get("db_params")
+    print("db_params en get_current_conexion_params:", db_params)
+    if not db_params:
         raise ValueError("No hay conexión activa configurada")
 
     return ConexionParams(
-        host=store.db_params.host,
-        password=store.db_params.password,
-        database=store.db_params.database,
+        host=db_params.get("host"),
+        password=db_params.get("password"),
+        database=db_params.get("database"),
     )
 
 
@@ -37,8 +37,9 @@ async def obtener_datos_tabla_base(
     Helper que consulta una tabla de la API.
     La lógica de consulta HTTP y manejo de conexión es común para todos los módulos.
     """
-    # Determinar el módulo actual
-    modulo = modulo or store.selected_module or default_module
+    # Determinar el módulo actual desde app.storage.user
+    selected_module = app.storage.user.get("selected_module")
+    modulo = modulo or selected_module or default_module
 
     # Obtener el endpoint y la URL base usando los mapas y el módulo
     endpoint = tablas_map[nombre_tabla]
@@ -48,12 +49,12 @@ async def obtener_datos_tabla_base(
     # Preparar y enviar la solicitud HTTP (Lógica común)
     conexion_params = get_current_conexion_params()
     payload = conexion_params.model_dump()
-    payload["export"] = export
 
     async with httpx.AsyncClient() as client:
         response = await client.post(
             url,
             json=payload,
+            params={"export": export},
         )
         response.raise_for_status()
         data = response.json()

@@ -12,7 +12,7 @@ from utils.jsons_utils import (
 
 # Para obtener las unidades de medida y poniendo alias con el nombre
 # del campo en el doctype
-def get_unidad_medida(db, export: bool = False):
+def get_unidad_medida(db):
     doctype_name = "UOM"
     sqlserver_name = "SMGNOMENCLADORUNIDADMEDIDA"
     module_name = "Setup"
@@ -41,12 +41,11 @@ def get_unidad_medida(db, export: bool = False):
         module_name=module_name,
         field_mapping=field_mapping,
         table_query=query,
-        save=export,
     )
 
 
 # Obtener los clientes y ponerle el alias con el nombre del campo en el doctype
-def get_clientes(db, export: bool = False):
+def get_clientes(db):
     doctype_name = "Customer"
     sqlserver_name = "SMGCLIENTEPROVEEDOR"
     module_name = "Selling"
@@ -145,12 +144,11 @@ def get_clientes(db, export: bool = False):
         module_name=module_name,
         field_mapping=field_mapping,
         table_query=query,
-        save=export,
     )
 
 
 # Obtener los proveedores y ponerle el alias con el nombre del campo en el doctype
-def get_proveedores(db, export: bool = False):
+def get_proveedores(db):
     doctype_name = "Supplier"
     sqlserver_name = "SMGCLIENTEPROVEEDOR"
     module_name = "Buying"
@@ -223,11 +221,10 @@ def get_proveedores(db, export: bool = False):
         module_name=module_name,
         field_mapping=field_mapping,
         table_query=query,
-        save=export,
     )
 
 
-def get_bank_accounts(db, export: bool = False):
+def get_bank_accounts(db):
     doctype_name = "Bank Account"
     sqlserver_name = "SCOCIENTEDATOSBANCARIOS"
     module_name = "Accounts"
@@ -272,11 +269,10 @@ def get_bank_accounts(db, export: bool = False):
         module_name=module_name,
         field_mapping=field_mapping,
         table_query=query,
-        save=export,
     )
 
 
-def get_contactos(db, export:bool = False):
+def get_contactos(db, export=False):
     doctype_name = "Contact"
     sqlserver_name = "SCOCLIENTECONTACTOS"
     module_name = "CRM"
@@ -373,8 +369,35 @@ def transform_contact_row(row: dict) -> dict:
     return contact
 
 
+# def transform_contact_row(row: dict) -> dict:
+#     """Convierte un row plano en estructura padre-hijo simplificada"""
+#     contact = {
+#         "first_name": row.get("first_name"),
+#         "last_name": row.get("last_name"),
+#         # Inicializar como None en lugar de listas vacías
+#         "phone_nos": None,
+#         "email_ids": None,
+#     }
+
+#     if row.get("mobile_no"):
+#         contact["phone_nos"] = {  # ← Objeto directo, no lista
+#             "doctype": "Contact Phone",
+#             "phone": row["mobile_no"],
+#             "is_primary_mobile_no": 1,
+#         }
+
+#     if row.get("email_id"):
+#         contact["email_ids"] = {  # ← Objeto directo, no lista
+#             "doctype": "Contact Email",
+#             "email_id": row["email_id"],
+#             "is_primary": 1,
+#         }
+
+#     return contact
+
+
 # Funcion que muestra los contactos por clientes/proveedores pero solo para el endpoint
-def get_clientes_con_contactos(db, export:bool = False):
+def get_clientes_con_contactos(db):
     # Mapeo de campos: alias -> (campo SQL, tipo)
     field_mapping = [
         ("cli_codigo", ("CP.CliCodigo", "string")),
@@ -434,7 +457,7 @@ def get_clientes_con_contactos(db, export:bool = False):
     return fetch_table_data(db, field_mapping, query)
 
 
-def get_banks(db, export: bool = False):
+def get_banks(db):
     doctype_name = "Bank"
     sqlserver_name = "SNOCONFIGURACION"
     module_name = "Accounts"
@@ -481,5 +504,4 @@ def get_banks(db, export: bool = False):
         module_name=module_name,
         field_mapping=field_mapping,
         table_query=query,
-        save=export,
     )

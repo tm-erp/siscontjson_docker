@@ -10,7 +10,6 @@ class ConexionParams(BaseModel):
     host: str
     database: str
     password: str
-    # export: bool = False
 
 
 class DBParams(BaseModel):

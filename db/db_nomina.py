@@ -14,7 +14,7 @@ from sqlalchemy import text
 
 # Funcion para obtener los datos de SCPTrabajadores segun el query necesario
 # para el JSON
-def get_trabajadores(db, export: bool = False) -> List[Dict]:
+def get_trabajadores(db) -> List[Dict]:
     doctype_name = "Employee"
     sqlserver_name = "SCPTRABAJADORES"
     module_name = "Setup"
@@ -30,7 +30,7 @@ def get_trabajadores(db, export: bool = False) -> List[Dict]:
         ("employment_type", ("MAX(TT.TipTrabDescripcion)", "string")),
         ("date_of_joining", ("MAX(T.TrabFechaAlta)", "string")),
         ("contract_end_date", ("MAX(T.TrabFechaBaja)", "string")),
-        ("banc_ac_no", ("MAX(T.TrabTmagnMN)", "string")),
+        ("bank_ac_no", ("MAX(T.TrabTmagnMN)", "string")),
         ("company_email", ("MAX(T.TrabCorreo)", "string")),
         (
             "accumulate_vacations",
@@ -64,7 +64,7 @@ def get_trabajadores(db, export: bool = False) -> List[Dict]:
             ),
         ),
         ("salary_group", ("MAX(E.EscSDescripcion)", "string")),
-        ("bank", ("'Bank'", "string")),
+        ("salary_mode", ("'Bank'", "string")),
         (
             "bank_name",
             (
@@ -108,14 +108,98 @@ def get_trabajadores(db, export: bool = False) -> List[Dict]:
         module_name=module_name,
         field_mapping=field_mapping,
         table_query=query,
-        save=export,
     )
 
+
+# Prepara la relacion entre las tablas con SCPTrabajadores y las muestra en
+# el frontend
+# def get_relaciones_trabajadores(db) -> List[Dict]:
+#     query = """
+#     SELECT
+#         fk.table_name AS source_table,
+#         fk.column_name AS source_column,
+#         pk.table_name AS target_table,
+#         pk.column_name AS target_column
+#     FROM
+#         information_schema.referential_constraints rc
+#     JOIN
+#         information_schema.key_column_usage fk ON rc.constraint_name =
+#         fk.constraint_name
+#     JOIN
+#         information_schema.key_column_usage pk ON rc.unique_constraint_name =
+#         pk.constraint_name
+#     WHERE
+#         fk.table_name IN ('SCPTrabajadores', 'SNOCARGOS',
+#         'SNOTIPOTRABAJADOR', 'SRHPersonas', 'SRHPersonasDireccion',
+#         'TEREPARTOS')
+#         OR pk.table_name IN ('SCPTrabajadores', 'SNOCARGOS',
+#         'SNOTIPOTRABAJADOR', 'SRHPersonas', 'SRHPersonasDireccion',
+#         'TEREPARTOS')
+#     """
+
+#     try:
+#         with db.cursor() as cursor:
+#             cursor.execute(query)
+#             rows = cursor.fetchall()
+#             return [
+#                 {
+#                     "source_table": row[0],
+#                     "source_column": row[1],
+#                     "target_table": row[2],
+#                     "target_column": row[3],
+#                 }
+#                 for row in rows
+#             ]
+#     except Exception as e:
+#         logging.error(f"Error al obtener relaciones entre tablas: {e}")
+#         raise
+
+
+# def construir_tree_trabajadores(relaciones):
+#     tree = {}
+#     counter = 1  # para generar IDs únicos
+
+#     for rel in relaciones:
+#         src = rel["source_table"]
+#         tgt = rel["target_table"]
+#         src_col = rel["source_column"]
+#         tgt_col = rel["target_column"]
+
+#         if src not in tree:
+#             tree[src] = {
+#                 "id": src,
+#                 "description": f"Relaciones desde {src}",
+#                 "children": {},
+#             }
+
+#         if tgt not in tree[src]["children"]:
+#             tree[src]["children"][tgt] = {
+#                 "id": f"{src}_{tgt}",
+#                 "description": f"Relaciones hacia {tgt}",
+#                 "children": [],
+#             }
+
+#         tree[src]["children"][tgt]["children"].append(
+#             {"id": f"rel_{counter}", "description": f"{src_col} → {tgt}.{tgt_col}"}
+#         )
+
+#         counter += 1
+
+#     # convertir a lista y formatear recursivamente
+#     return [
+#         {
+#             "id": src_node["id"],
+#             "description": src_node["description"],
+#             "children": list(tgt_dict.values()),
+#         }
+#         for src_node in tree.values()
+#         for tgt_dict in [src_node["children"]]
+#     ]
 
 
 # Para obtener las categorias ocupacionales y poniendo alias con el nombre
 # del campo en el doctype
-def get_categorias_ocupacionales(db, export: bool = False):
+def get_categorias_ocupacionales(db):
     doctype_name = "Occupational Category"
     sqlserver_name = "SNOCATEGOCUP"
     module_name = "Cuba"
@@ -144,13 +228,12 @@ def get_categorias_ocupacionales(db, export: bool = False):
         module_name=module_name,
         field_mapping=field_mapping,
         table_query=query,
-        save=export
     )
 
 
 # Para obtener los cargos de los trabajadores
 # No le pongo field_mapping por ser un solo campo tipo texto
-def get_cargos_trabajadores(db, export: bool = False):
+def get_cargos_trabajadores(db):
     doctype_name = "Designation"
     sqlserver_name = "SNOCARGOS"
     module_name = "Setup"
@@ -178,13 +261,12 @@ def get_cargos_trabajadores(db, export: bool = False):
         module_name=module_name,
         field_mapping=field_mapping,
         table_query=query,
-        save=export
     )
 
 
 # Para obtener los tipos de trabajadores
 # No field_mapping por ser solo campo tipo texto
-def get_tipos_trabajadores(db, export: bool = False):
+def get_tipos_trabajadores(db):
     doctype_name = "Employment Type"
     sqlserver_name = "SNOTIPOTRABAJADOR"
     module_name = "HR"
@@ -212,12 +294,11 @@ def get_tipos_trabajadores(db, export: bool = False):
         module_name=module_name,
         field_mapping=field_mapping,
         table_query=query,
-        save=export
     )
 
 
 # Para obtener los tipos de  retenciones
-def get_tipos_retenciones(db, export: bool = False):
+def get_tipos_retenciones(db):
     doctype_name = "Withholding Type"
     sqlserver_name = "SCPCONRETPAGAR"
     module_name = "Cuba"
@@ -251,12 +332,11 @@ def get_tipos_retenciones(db, export: bool = False):
         module_name=module_name,
         field_mapping=field_mapping,
         table_query=query,
-        save=export
     )
 
 
 # Para obtener maestro de  retenciones
-def get_maestro_retenciones(db, export: bool = False):
+def get_maestro_retenciones(db):
     doctype_name = "XXXXXX"
     sqlserver_name = "SCPMAESTRORETENCION"
     module_name = "XXXXXX"
@@ -306,12 +386,11 @@ def get_maestro_retenciones(db, export: bool = False):
         module_name=module_name,
         field_mapping=field_mapping,
         table_query=query,
-        save=export
     )
 
 
 # Para obtener loa pensionados
-def get_pensionados(db, export: bool = False):
+def get_pensionados(db):
     doctype_name = "Customer"
     sqlserver_name = "SNOMANTPENS"
     module_name = "Selling"
@@ -346,12 +425,11 @@ def get_pensionados(db, export: bool = False):
         module_name=module_name,
         field_mapping=field_mapping,
         table_query=query,
-        save=export
     )
 
 
 # Para obtener tasas de destajo
-def get_tasas_destajos(db, export: bool = False):
+def get_tasas_destajos(db):
     doctype_name = "Item Price"
     sqlserver_name = "SNONOMENCLADORTASASDESTAJO"
     module_name = "Stock"
@@ -379,12 +457,11 @@ def get_tasas_destajos(db, export: bool = False):
         module_name=module_name,
         field_mapping=field_mapping,
         table_query=query,
-        save=export
     )
 
 
 # Para obtener colectivos
-def get_colectivos(db, export: bool = False):
+def get_colectivos(db):
     doctype_name = "Employee Group"
     sqlserver_name = "SNONOMENCLADORCOLECTIVOS"
     module_name = "Setup"
@@ -412,12 +489,11 @@ def get_colectivos(db, export: bool = False):
         module_name=module_name,
         field_mapping=field_mapping,
         table_query=query,
-        save=export
     )
 
 
 # Para obtener departamentos
-def get_departamentos(db, export: bool = False):
+def get_departamentos(db):
     doctype_name = "Department"
     sqlserver_name = "SMGAREASUBAREA"
     module_name = "Setup"
@@ -457,12 +533,11 @@ def get_departamentos(db, export: bool = False):
         module_name=module_name,
         field_mapping=field_mapping,
         table_query=query,
-        save=export
     )
 
 
 # Para submayor de vacaciones
-def get_submayor_vacaciones(db, export: bool = False):
+def get_submayor_vacaciones(db):
     doctype_name = "Employee Opening Vacation Subledger"
     sqlserver_name = "SNOSMVACACIONES"
     module_name = "Cuba"
@@ -501,12 +576,11 @@ def get_submayor_vacaciones(db, export: bool = False):
         field_mapping=field_mapping,
         base_query_from=base_query_from,
         order_clause=order_clause,
-        save=export
     )
 
 
 # Para submayor de salarios no reclamados
-def get_submayor_salarios_no_reclamados(db, export: bool = False):
+def get_submayor_salarios_no_reclamados(db):
     doctype_name = "Opening of the Unclaimed Salary Subledger"
     sqlserver_name = "SNOSMREINTEGRONR"
     module_name = "Cuba"
@@ -541,11 +615,10 @@ def get_submayor_salarios_no_reclamados(db, export: bool = False):
         field_mapping=field_mapping,
         base_query_from=base_query_from,
         order_clause=order_clause,
-        save=export
     )
 
 
-def get_corte_sc408(db, current_year=None, export: bool = False):
+def get_corte_sc408(db, current_year=None):
     doctype_name = "sc408 model"
     sqlserver_name = "SNOMODSC408CORTE"
     module_name = "Cuba"
@@ -643,12 +716,11 @@ def get_corte_sc408(db, current_year=None, export: bool = False):
         field_mapping=field_mapping,
         base_query_from=base_query_from,
         order_clause=order_clause,
-        save=export
     )
 
 
 # Nomenclador del Grupo Salarial
-def get_grupo_salarial(db, export: bool = False):
+def get_grupo_salarial(db):
     doctype_name = "Salary Group"
     sqlserver_name = "SNOESACALASAL"
     module_name = "Cuba"
@@ -681,11 +753,10 @@ def get_grupo_salarial(db, export: bool = False):
         module_name=module_name,
         field_mapping=field_mapping,
         table_query=query,
-        save=export
     )
 
 
-def get_puestos_trabajos(db, export: bool = False):
+def get_puestos_trabajos(db):
     doctype_name = "Job Position"
     sqlserver_name = "PUESTOS_TRABAJO"
     module_name = "Cuba"
@@ -741,14 +812,93 @@ FROM CombinacionesUnicas;
         module_name=module_name,
         field_mapping=field_mapping,
         table_query=query,
-        save=export
     )
 
 
+# def get_configuracion_contribuciones_impuestos(db):
+#     doctype_name = "Contribution and Taxes Settings"
+#     sqlserver_name = "SNOContImpuestos"
+#     module_name = "Cuba"
+
+#     query = """
+#         SELECT
+#             c.ContImpId,
+#             c.ContImpDescripcion AS name1,
+#             CASE
+#                 WHEN c.ContImpTipo = 'C' THEN 'Contribution'
+#                 ELSE 'Tax'
+#             END AS type,
+#             l.ContImpaPartir1 AS from_amount,
+#             l.ContImpHasta AS to_amount,
+#             l.ContImpPorciento1 AS porciento
+#         FROM SNOContImpuestos c
+#         LEFT JOIN SNOContImpuestosLevel1 l
+#             ON c.ContImpId = l.ContImpId
+#         WHERE
+#             c.ContImpDesactivada IS NULL
+#             OR c.ContImpDesactivada = ''
+#         ORDER BY c.ContImpId, l.ContImpaPartir1
+#     """
+
+#     print(query)
+
+#     # field_mapping correcto
+#     field_mapping = [
+#         ("name1", ("name1", "string")),
+#         ("type", ("type", "string")),
+#         ("from_amount", ("from_amount", "float")),
+#         ("to_amount", ("to_amount", "float")),
+#         ("porciento", ("percent", "float")),
+#     ]
+
+#     # Ejecutar la query usando fetch_table_data
+#     rows = fetch_table_data(db, field_mapping, query)
+
+#     # print(">>> Rows recibidas:", len(rows))
+#     # if rows:
+#     #     print(">>> Primera fila:", rows[0])
+
+#     data = _format_contribuciones_impuestos(rows)
+#     # print(">>> DATA FINAL:")
+#     # print(json.dumps(data, indent=4, ensure_ascii=False))
+
+#     save_json_file(
+#         doctype_name=doctype_name,
+#         data=data,
+#         module_name=module_name,
+#         sqlserver_name=sqlserver_name,
+#     )
+
+#     # Devuelve directamente lo que espera la UI
+#     return {
+#         "doctype": doctype_name,
+#         "data": data,
+#     }
+
+
+# def _format_contribuciones_impuestos(rows: list) -> list:
+#     impuestos = {}
+
+#     for row in rows:
+#         key = row["name1"]
+
+#         if key not in impuestos:
+#             impuestos[key] = {"name1": row["name1"], "type": row["type"], "ranges": []}
+
+#         if row["from_amount"] is not None:
+#             impuestos[key]["ranges"].append(
+#                 {
+#                     "from_amount": float(row["from_amount"] or 0),
+#                     "to_amount": float(row["to_amount"] or 0),
+#                     "percent": float(row["porciento"] or 0),
+#                 }
+#             )
+
+#     return list(impuestos.values())
 
 
 def get_configuracion_contribuciones_impuestos(db, export: bool = False):
-    doctype_name = "Contribution and Taxes Settings"
+    doctype_name = "Contributions and Taxes Setting"
     sqlserver_name = "SNOContImpuestos"
     module_name = "Cuba"
 
@@ -841,11 +991,12 @@ def transform_contribuciones_impuestos(rows: list) -> list:
 
 
 def get_asignacion_contribuciones_impuestos(db, export: bool = False):
-    doctype_name = "Allocation of Contribution and Taxes"
-    sqlserver_name = "SCPTRABAJADORES"
+    doctype_name = "Allocation of Contributions and Taxes"
+    sqlserver_name = "SNOContImpuestosLevel1"
     module_name = "Cuba"
 
     field_mapping = [
+        ("naming_series", ("'HR-CAL-.YYYY.-'", "string")),
         (
             "employee",
             (
@@ -862,9 +1013,9 @@ def get_asignacion_contribuciones_impuestos(db, export: bool = False):
                 "string",
             ),
         ),
-        ("from_amount", ("l1.ContImpaPartir1", "float")),
-        ("to_amount", ("CAST(l1.ContImpHasta AS INT)", "integer")),
-        ("porciento", ("l1.ContImpPorciento1", "float")),
+        # ("from_amount", ("l1.ContImpaPartir1", "float")),
+        # ("to_amount", ("CAST(l1.ContImpHasta AS INT)", "integer")),
+        # ("porciento", ("l1.ContImpPorciento1", "float")),
     ]
 
     select_clauses = [
@@ -908,28 +1059,18 @@ def transform_asignacion(rows: list) -> list:
         impuesto = row["name1"].strip()
 
         if emp not in empleados:
-            empleados[emp] = {"employee": emp, "allocations": {}}
-
-        if impuesto not in empleados[emp]["allocations"]:
-            empleados[emp]["allocations"][impuesto] = {
-                "name1": impuesto,
-                "type": row["type"],
-                "ranges": [],
+            empleados[emp] = {
+                "naming_series": row["naming_series"],
+                "employee": emp,
+                "allocations": {},
             }
 
-        rango = {
-            "from_amount": row["from_amount"],
-            "to_amount": row["to_amount"],
-            "porciento": row["porciento"],
-        }
-
-        if rango not in empleados[emp]["allocations"][impuesto]["ranges"]:
-            empleados[emp]["allocations"][impuesto]["ranges"].append(rango)
-
-    # ordenar rangos
-    for emp in empleados.values():
-        for imp in emp["allocations"].values():
-            imp["ranges"].sort(key=lambda x: x["from_amount"])
+        # Solo guardamos la información del impuesto sin rangos
+        if impuesto not in empleados[emp]["allocations"]:
+            empleados[emp]["allocations"][impuesto] = {
+                "contributions": impuesto,
+                "type": row["type"],
+            }
 
     # convertir allocations de dict → lista
     resultado = []
@@ -938,3 +1079,47 @@ def transform_asignacion(rows: list) -> list:
         resultado.append(emp)
 
     return resultado
+
+
+# def transform_asignacion(rows: list) -> list:
+#     empleados = {}
+
+#     for row in rows:
+#         emp = row["employee"].strip()
+#         impuesto = row["name1"].strip()
+
+#         if emp not in empleados:
+#             empleados[emp] = {
+#                 "naming_series": row["naming_series"],
+#                 "employee": emp,
+#                 "allocations": {},
+#             }
+
+#         if impuesto not in empleados[emp]["allocations"]:
+#             empleados[emp]["allocations"][impuesto] = {
+#                 "name1": impuesto,
+#                 "type": row["type"],
+#                 "ranges": [],
+#             }
+
+#         rango = {
+#             "from_amount": row["from_amount"],
+#             "to_amount": row["to_amount"],
+#             "porciento": row["porciento"],
+#         }
+
+#         if rango not in empleados[emp]["allocations"][impuesto]["ranges"]:
+#             empleados[emp]["allocations"][impuesto]["ranges"].append(rango)
+
+#     # ordenar rangos
+#     for emp in empleados.values():
+#         for imp in emp["allocations"].values():
+#             imp["ranges"].sort(key=lambda x: x["from_amount"])
+
+#     # convertir allocations de dict → lista
+#     resultado = []
+#     for emp in empleados.values():
+#         emp["allocations"] = list(emp["allocations"].values())
+#         resultado.append(emp)
+
+#     return resultado
