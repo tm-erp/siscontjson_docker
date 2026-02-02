@@ -1,0 +1,58 @@
+[project]
+name = "siscontjson-docker"
+version = "0.1.0"
+description = "Sistema de exportacion de sqlserver a JSON con NiceGUI"
+readme = "README.md"
+requires-python = ">=3.13"
+authors = [
+    { name = "Niurka", email = "killa@tm.cupet.cu" }
+]
+
+# Solo dependencias PRINCIPALES de producción
+dependencies = [
+    "nicegui>=2.18.0",
+    "fastapi>=0.115.0",
+    "uvicorn>=0.34.0",
+    "pandas>=2.3.0",
+    "sqlalchemy>=2.0.0",
+    "pydantic>=2.11.0",
+    "pydantic-settings>=2.9.1",
+    "python-dotenv>=1.1.0",
+    "pymssql>=2.3.0",
+    "pyodbc>=5.2.0",
+    "openpyxl>=3.1.0",
+    "aiofiles>=24.1.0",
+    "httpx>=0.28.0",
+    "requests>=2.32.0",
+]
+
+# Dependencias de DESARROLLO
+[project.optional-dependencies]
+dev = [
+    "black>=25.1.0",
+    "flake8>=7.2.0",
+    "mypy>=1.16.0",
+    "isort>=6.0.0",
+    "pre-commit>=4.2.0",
+    "bandit>=1.8.0",
+    "pytest>=8.0.0",  # agregar si usas tests
+]
+
+# Configuración de herramientas
+[tool.black]
+line-length = 88
+target-version = ['py313']
+
+[tool.isort]
+profile = "black"
+line_length = 88
+
+[tool.mypy]
+python_version = "3.13"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
