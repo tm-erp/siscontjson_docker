@@ -14,7 +14,7 @@ from sqlalchemy import text
 
 # Funcion para obtener los datos de SCPTrabajadores segun el query necesario
 # para el JSON
-def get_trabajadores(db) -> List[Dict]:
+def get_trabajadores(db, export=False) -> List[Dict]:
     doctype_name = "Employee"
     sqlserver_name = "SCPTRABAJADORES"
     module_name = "Setup"
@@ -108,98 +108,13 @@ def get_trabajadores(db) -> List[Dict]:
         module_name=module_name,
         field_mapping=field_mapping,
         table_query=query,
+        save=export,
     )
-
-
-# Prepara la relacion entre las tablas con SCPTrabajadores y las muestra en
-# el frontend
-# def get_relaciones_trabajadores(db) -> List[Dict]:
-#     query = """
-#     SELECT
-#         fk.table_name AS source_table,
-#         fk.column_name AS source_column,
-#         pk.table_name AS target_table,
-#         pk.column_name AS target_column
-#     FROM
-#         information_schema.referential_constraints rc
-#     JOIN
-#         information_schema.key_column_usage fk ON rc.constraint_name =
-#         fk.constraint_name
-#     JOIN
-#         information_schema.key_column_usage pk ON rc.unique_constraint_name =
-#         pk.constraint_name
-#     WHERE
-#         fk.table_name IN ('SCPTrabajadores', 'SNOCARGOS',
-#         'SNOTIPOTRABAJADOR', 'SRHPersonas', 'SRHPersonasDireccion',
-#         'TEREPARTOS')
-#         OR pk.table_name IN ('SCPTrabajadores', 'SNOCARGOS',
-#         'SNOTIPOTRABAJADOR', 'SRHPersonas', 'SRHPersonasDireccion',
-#         'TEREPARTOS')
-#     """
-
-#     try:
-#         with db.cursor() as cursor:
-#             cursor.execute(query)
-#             rows = cursor.fetchall()
-#             return [
-#                 {
-#                     "source_table": row[0],
-#                     "source_column": row[1],
-#                     "target_table": row[2],
-#                     "target_column": row[3],
-#                 }
-#                 for row in rows
-#             ]
-#     except Exception as e:
-#         logging.error(f"Error al obtener relaciones entre tablas: {e}")
-#         raise
-
-
-# def construir_tree_trabajadores(relaciones):
-#     tree = {}
-#     counter = 1  # para generar IDs únicos
-
-#     for rel in relaciones:
-#         src = rel["source_table"]
-#         tgt = rel["target_table"]
-#         src_col = rel["source_column"]
-#         tgt_col = rel["target_column"]
-
-#         if src not in tree:
-#             tree[src] = {
-#                 "id": src,
-#                 "description": f"Relaciones desde {src}",
-#                 "children": {},
-#             }
-
-#         if tgt not in tree[src]["children"]:
-#             tree[src]["children"][tgt] = {
-#                 "id": f"{src}_{tgt}",
-#                 "description": f"Relaciones hacia {tgt}",
-#                 "children": [],
-#             }
-
-#         tree[src]["children"][tgt]["children"].append(
-#             {"id": f"rel_{counter}", "description": f"{src_col} → {tgt}.{tgt_col}"}
-#         )
-
-#         counter += 1
-
-#     # convertir a lista y formatear recursivamente
-#     return [
-#         {
-#             "id": src_node["id"],
-#             "description": src_node["description"],
-#             "children": list(tgt_dict.values()),
-#         }
-#         for src_node in tree.values()
-#         for tgt_dict in [src_node["children"]]
-#     ]
 
 
 # Para obtener las categorias ocupacionales y poniendo alias con el nombre
 # del campo en el doctype
-def get_categorias_ocupacionales(db):
+def get_categorias_ocupacionales(db, export=False):
     doctype_name = "Occupational Category"
     sqlserver_name = "SNOCATEGOCUP"
     module_name = "Cuba"
@@ -228,12 +143,13 @@ def get_categorias_ocupacionales(db):
         module_name=module_name,
         field_mapping=field_mapping,
         table_query=query,
+        save=export,
     )
 
 
 # Para obtener los cargos de los trabajadores
 # No le pongo field_mapping por ser un solo campo tipo texto
-def get_cargos_trabajadores(db):
+def get_cargos_trabajadores(db, export=False):
     doctype_name = "Designation"
     sqlserver_name = "SNOCARGOS"
     module_name = "Setup"
@@ -261,12 +177,13 @@ def get_cargos_trabajadores(db):
         module_name=module_name,
         field_mapping=field_mapping,
         table_query=query,
+        save=export,
     )
 
 
 # Para obtener los tipos de trabajadores
 # No field_mapping por ser solo campo tipo texto
-def get_tipos_trabajadores(db):
+def get_tipos_trabajadores(db, export=False):
     doctype_name = "Employment Type"
     sqlserver_name = "SNOTIPOTRABAJADOR"
     module_name = "HR"
@@ -294,11 +211,12 @@ def get_tipos_trabajadores(db):
         module_name=module_name,
         field_mapping=field_mapping,
         table_query=query,
+        save=export,
     )
 
 
 # Para obtener los tipos de  retenciones
-def get_tipos_retenciones(db):
+def get_tipos_retenciones(db, export=False):
     doctype_name = "Withholding Type"
     sqlserver_name = "SCPCONRETPAGAR"
     module_name = "Cuba"
@@ -332,11 +250,12 @@ def get_tipos_retenciones(db):
         module_name=module_name,
         field_mapping=field_mapping,
         table_query=query,
+        save=export,
     )
 
 
 # Para obtener maestro de  retenciones
-def get_maestro_retenciones(db):
+def get_maestro_retenciones(db, export=False):
     doctype_name = "XXXXXX"
     sqlserver_name = "SCPMAESTRORETENCION"
     module_name = "XXXXXX"
@@ -386,6 +305,7 @@ def get_maestro_retenciones(db):
         module_name=module_name,
         field_mapping=field_mapping,
         table_query=query,
+        save=export,
     )
 
 
@@ -425,11 +345,12 @@ def get_pensionados(db):
         module_name=module_name,
         field_mapping=field_mapping,
         table_query=query,
+        save=export,
     )
 
 
 # Para obtener tasas de destajo
-def get_tasas_destajos(db):
+def get_tasas_destajos(db, export=False):
     doctype_name = "Item Price"
     sqlserver_name = "SNONOMENCLADORTASASDESTAJO"
     module_name = "Stock"
@@ -457,11 +378,12 @@ def get_tasas_destajos(db):
         module_name=module_name,
         field_mapping=field_mapping,
         table_query=query,
+        save=export,
     )
 
 
 # Para obtener colectivos
-def get_colectivos(db):
+def get_colectivos(db, export=False):
     doctype_name = "Employee Group"
     sqlserver_name = "SNONOMENCLADORCOLECTIVOS"
     module_name = "Setup"
@@ -489,11 +411,12 @@ def get_colectivos(db):
         module_name=module_name,
         field_mapping=field_mapping,
         table_query=query,
+        save=export,
     )
 
 
 # Para obtener departamentos
-def get_departamentos(db):
+def get_departamentos(db, export=False):
     doctype_name = "Department"
     sqlserver_name = "SMGAREASUBAREA"
     module_name = "Setup"
@@ -533,11 +456,12 @@ def get_departamentos(db):
         module_name=module_name,
         field_mapping=field_mapping,
         table_query=query,
+        save=export,
     )
 
 
 # Para submayor de vacaciones
-def get_submayor_vacaciones(db):
+def get_submayor_vacaciones(db, export=False):
     doctype_name = "Employee Opening Vacation Subledger"
     sqlserver_name = "SNOSMVACACIONES"
     module_name = "Cuba"
@@ -576,11 +500,12 @@ def get_submayor_vacaciones(db):
         field_mapping=field_mapping,
         base_query_from=base_query_from,
         order_clause=order_clause,
+        save=export,
     )
 
 
 # Para submayor de salarios no reclamados
-def get_submayor_salarios_no_reclamados(db):
+def get_submayor_salarios_no_reclamados(db, export=False):
     doctype_name = "Opening of the Unclaimed Salary Subledger"
     sqlserver_name = "SNOSMREINTEGRONR"
     module_name = "Cuba"
@@ -618,7 +543,7 @@ def get_submayor_salarios_no_reclamados(db):
     )
 
 
-def get_corte_sc408(db, current_year=None):
+def get_corte_sc408(db, current_year=None, export=False):
     doctype_name = "sc408 model"
     sqlserver_name = "SNOMODSC408CORTE"
     module_name = "Cuba"
@@ -716,11 +641,12 @@ def get_corte_sc408(db, current_year=None):
         field_mapping=field_mapping,
         base_query_from=base_query_from,
         order_clause=order_clause,
+        save=export,
     )
 
 
 # Nomenclador del Grupo Salarial
-def get_grupo_salarial(db):
+def get_grupo_salarial(db, export=False):
     doctype_name = "Salary Group"
     sqlserver_name = "SNOESACALASAL"
     module_name = "Cuba"
@@ -753,10 +679,11 @@ def get_grupo_salarial(db):
         module_name=module_name,
         field_mapping=field_mapping,
         table_query=query,
+        save=export,
     )
 
 
-def get_puestos_trabajos(db):
+def get_puestos_trabajos(db, export=False):
     doctype_name = "Job Position"
     sqlserver_name = "PUESTOS_TRABAJO"
     module_name = "Cuba"
@@ -812,6 +739,7 @@ FROM CombinacionesUnicas;
         module_name=module_name,
         field_mapping=field_mapping,
         table_query=query,
+        save=export,
     )
 
 

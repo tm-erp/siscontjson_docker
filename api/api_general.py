@@ -6,12 +6,7 @@ from fastapi.responses import JSONResponse
 from db import db_general as general
 from db.db_connection import create_db_managerAlchemy
 from db.db_manager import ConexionParams
-
-# from db.db_nomina import (
-#     get_categorias_ocupacionales,
-#     get_relaciones_trabajadores,
-#     get_trabajadores,
-# )
+from fastapi import Query
 
 router = APIRouter()
 
@@ -22,10 +17,12 @@ router = APIRouter()
     description="Muestra listado de las unidades de medida",
     tags=["GENERAL"],
 )
-async def get_unidad_medida_endpoint(params: ConexionParams):
+async def get_unidad_medida_endpoint(
+    params: ConexionParams, export: bool = Query(False)
+):
     try:
         with create_db_managerAlchemy(params) as db:
-            data = general.get_unidad_medida(db)
+            data = general.get_unidad_medida(db, export=False)
             return JSONResponse(content=data)
     except Exception as e:
         raise HTTPException(
@@ -41,10 +38,10 @@ async def get_unidad_medida_endpoint(params: ConexionParams):
     description="Muestra Listado de los clientes",
     tags=["GENERAL"],
 )
-async def get_clientes_endpoint(params: ConexionParams):
+async def get_clientes_endpoint(params: ConexionParams, export: bool = Query(False)):
     try:
         with create_db_managerAlchemy(params) as db:
-            data = general.get_clientes(db)
+            data = general.get_clientes(db, export=False)
             return JSONResponse(content=data)
     except Exception as e:
         raise HTTPException(
@@ -60,10 +57,10 @@ async def get_clientes_endpoint(params: ConexionParams):
     description="Muestra Listado de los proveedoresr",
     tags=["GENERAL"],
 )
-async def get_proveedores_endpoint(params: ConexionParams):
+async def get_proveedores_endpoint(params: ConexionParams, export: bool = Query(False)):
     try:
         with create_db_managerAlchemy(params) as db:
-            data = general.get_proveedores(db)
+            data = general.get_proveedores(db, export=False)
             return JSONResponse(content=data)
     except Exception as e:
         raise HTTPException(
@@ -79,10 +76,10 @@ async def get_proveedores_endpoint(params: ConexionParams):
     description="Muestra Listado de los contactos",
     tags=["GENERAL"],
 )
-async def get_contactos_endpoint(params: ConexionParams):
+async def get_contactos_endpoint(params: ConexionParams, export: bool = Query(False)):
     try:
         with create_db_managerAlchemy(params) as db:
-            data = general.get_contactos(db)
+            data = general.get_contactos(db, export=False)
             return JSONResponse(content=data)
     except Exception as e:
         raise HTTPException(
@@ -98,10 +95,10 @@ async def get_contactos_endpoint(params: ConexionParams):
     description="Muestra listado de los bancos",
     tags=["GENERAL"],
 )
-async def get_bancos_endpoint(params: ConexionParams):
+async def get_bancos_endpoint(params: ConexionParams, export: bool = Query(False)):
     try:
         with create_db_managerAlchemy(params) as db:
-            data = general.get_banks(db)
+            data = general.get_banks(db, export=False)
             return JSONResponse(content=data)
     except Exception as e:
         raise HTTPException(
@@ -117,10 +114,12 @@ async def get_bancos_endpoint(params: ConexionParams):
     description="Muestra listado de las cuentas bancarias",
     tags=["GENERAL"],
 )
-async def get_cuentas_bancarias_endpoint(params: ConexionParams):
+async def get_cuentas_bancarias_endpoint(
+    params: ConexionParams, export: bool = Query(False)
+):
     try:
         with create_db_managerAlchemy(params) as db:
-            data = general.get_bank_accounts(db)
+            data = general.get_bank_accounts(db, export=False)
             return JSONResponse(content=data)
     except Exception as e:
         raise HTTPException(
@@ -136,10 +135,12 @@ async def get_cuentas_bancarias_endpoint(params: ConexionParams):
     description="Muestra listado de clientes con la cantidad de contactos y detalles",
     tags=["GENERAL"],
 )
-async def get_clientes_con_contactos_endpoint(params: ConexionParams):
+async def get_clientes_con_contactos_endpoint(
+    params: ConexionParams, export: bool = Query(False)
+):
     try:
         with create_db_managerAlchemy(params) as db:
-            data = general.get_clientes_con_contactos(db)
+            data = general.get_clientes_con_contactos(db, export=False)
             return JSONResponse(content=data)
     except Exception as e:
         raise HTTPException(

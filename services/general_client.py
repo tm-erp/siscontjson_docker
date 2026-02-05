@@ -37,7 +37,7 @@ DOCTYPE_NAME_MAP = {
 get_current_conexion_params = get_current_conexion_params
 
 
-async def obtener_datos_tabla(nombre_tabla: str, modulo: str | None = None) -> Any:
+async def obtener_datos_tabla(nombre_tabla: str, modulo: str | None = None, export=False) -> Any:
     """
     Función de fachada para General que llama a la función base.
     """
@@ -47,4 +47,5 @@ async def obtener_datos_tabla(nombre_tabla: str, modulo: str | None = None) -> A
         doctype_map=DOCTYPE_NAME_MAP,
         default_module="general",
         modulo=modulo,
+        export=export,
     )

@@ -12,7 +12,7 @@ from utils.jsons_utils import (
 
 # Para obtener las unidades de medida y poniendo alias con el nombre
 # del campo en el doctype
-def get_unidad_medida(db):
+def get_unidad_medida(db, export=False):
     doctype_name = "UOM"
     sqlserver_name = "SMGNOMENCLADORUNIDADMEDIDA"
     module_name = "Setup"
@@ -41,11 +41,12 @@ def get_unidad_medida(db):
         module_name=module_name,
         field_mapping=field_mapping,
         table_query=query,
+        save=export,
     )
 
 
 # Obtener los clientes y ponerle el alias con el nombre del campo en el doctype
-def get_clientes(db):
+def get_clientes(db, export=False):
     doctype_name = "Customer"
     sqlserver_name = "SMGCLIENTEPROVEEDOR"
     module_name = "Selling"
@@ -144,11 +145,12 @@ def get_clientes(db):
         module_name=module_name,
         field_mapping=field_mapping,
         table_query=query,
+        save=export,
     )
 
 
 # Obtener los proveedores y ponerle el alias con el nombre del campo en el doctype
-def get_proveedores(db):
+def get_proveedores(db, export=False):
     doctype_name = "Supplier"
     sqlserver_name = "SMGCLIENTEPROVEEDOR"
     module_name = "Buying"
@@ -221,10 +223,11 @@ def get_proveedores(db):
         module_name=module_name,
         field_mapping=field_mapping,
         table_query=query,
+        save=export,
     )
 
 
-def get_bank_accounts(db):
+def get_bank_accounts(db, export=False):
     doctype_name = "Bank Account"
     sqlserver_name = "SCOCIENTEDATOSBANCARIOS"
     module_name = "Accounts"
@@ -269,6 +272,7 @@ def get_bank_accounts(db):
         module_name=module_name,
         field_mapping=field_mapping,
         table_query=query,
+        save=export,
     )
 
 
@@ -457,7 +461,7 @@ def get_clientes_con_contactos(db):
     return fetch_table_data(db, field_mapping, query)
 
 
-def get_banks(db):
+def get_banks(db, export=False):
     doctype_name = "Bank"
     sqlserver_name = "SNOCONFIGURACION"
     module_name = "Accounts"
@@ -504,4 +508,5 @@ def get_banks(db):
         module_name=module_name,
         field_mapping=field_mapping,
         table_query=query,
+        save=export,
     )

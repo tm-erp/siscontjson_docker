@@ -423,6 +423,15 @@ wheels = [
 ]
 
 [[package]]
+name = "iniconfig"
+version = "2.3.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/72/34/14ca021ce8e5dfedc35312d08ba8bf51fdd999c576889fc2c24cb97f4f10/iniconfig-2.3.0.tar.gz", hash = "sha256:c76315c77db068650d49c5b56314774a7804df16fee4402c1f19d6d15d8c4730", size = 20503, upload-time = "2025-10-18T21:55:43.219Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/cb/b1/3846dd7f199d53cb17f49cba7e651e9ce294d8497c8c150530ed11865bb8/iniconfig-2.3.0-py3-none-any.whl", hash = "sha256:f631c04d2c48c52b84d0d0549c99ff3859c98df65b3101406327ecc7d53fbf12", size = 7484, upload-time = "2025-10-18T21:55:41.639Z" },
+]
+
+[[package]]
 name = "isort"
 version = "6.0.1"
 source = { registry = "https://pypi.org/simple" }
@@ -775,6 +784,15 @@ wheels = [
 ]
 
 [[package]]
+name = "pluggy"
+version = "1.6.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/f9/e2/3e91f31a7d2b083fe6ef3fa267035b518369d9511ffab804f839851d2779/pluggy-1.6.0.tar.gz", hash = "sha256:7dcc130b76258d33b90f61b658791dede3486c3e6bfb003ee5c9bfb396dd22f3", size = 69412, upload-time = "2025-05-15T12:30:07.975Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/54/20/4d324d65cc6d9205fabedc306948156824eb9f0ee1633355a8f7ec5c66bf/pluggy-1.6.0-py3-none-any.whl", hash = "sha256:e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746", size = 20538, upload-time = "2025-05-15T12:30:06.134Z" },
+]
+
+[[package]]
 name = "pre-commit"
 version = "4.2.0"
 source = { registry = "https://pypi.org/simple" }
@@ -963,6 +981,22 @@ wheels = [
 ]
 
 [[package]]
+name = "pytest"
+version = "9.0.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "colorama", marker = "sys_platform == 'win32'" },
+    { name = "iniconfig" },
+    { name = "packaging" },
+    { name = "pluggy" },
+    { name = "pygments" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d1/db/7ef3487e0fb0049ddb5ce41d3a49c235bf9ad299b6a25d5780a89f19230f/pytest-9.0.2.tar.gz", hash = "sha256:75186651a92bd89611d1d9fc20f0b4345fd827c41ccd5c299a868a05d70edf11", size = 1568901, upload-time = "2025-12-06T21:30:51.014Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3b/ab/b3226f0bd7cdcf710fbede2b3548584366da3b19b5021e74f5bde2a8fa3f/pytest-9.0.2-py3-none-any.whl", hash = "sha256:711ffd45bf766d5264d487b917733b453d917afd2b0ad65223959f59089f875b", size = 374801, upload-time = "2025-12-06T21:30:49.154Z" },
+]
+
+[[package]]
 name = "python-dateutil"
 version = "2.9.0.post0"
 source = { registry = "https://pypi.org/simple" }
@@ -1091,153 +1125,60 @@ wheels = [
 [[package]]
 name = "siscontjson-docker"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "aiofiles" },
-    { name = "aiohappyeyeballs" },
-    { name = "aiohttp" },
-    { name = "aiosignal" },
-    { name = "annotated-types" },
-    { name = "anyio" },
-    { name = "attrs" },
-    { name = "bandit" },
-    { name = "bidict" },
-    { name = "black" },
-    { name = "certifi" },
-    { name = "cfgv" },
-    { name = "charset-normalizer" },
-    { name = "click" },
-    { name = "distlib" },
-    { name = "docutils" },
     { name = "fastapi" },
-    { name = "filelock" },
-    { name = "flake8" },
-    { name = "frozenlist" },
-    { name = "h11" },
-    { name = "httpcore" },
-    { name = "httptools" },
     { name = "httpx" },
-    { name = "identify" },
-    { name = "idna" },
-    { name = "ifaddr" },
-    { name = "isort" },
-    { name = "itsdangerous" },
-    { name = "jinja2" },
-    { name = "markdown2" },
-    { name = "markupsafe" },
-    { name = "multidict" },
-    { name = "mypy" },
     { name = "nicegui" },
-    { name = "nodeenv" },
     { name = "openpyxl" },
-    { name = "orjson" },
     { name = "pandas" },
-    { name = "platformdirs" },
-    { name = "pre-commit" },
-    { name = "propcache" },
-    { name = "pscript" },
     { name = "pydantic" },
-    { name = "pydantic-core" },
     { name = "pydantic-settings" },
-    { name = "pygments" },
     { name = "pymssql" },
     { name = "pyodbc" },
     { name = "python-dotenv" },
-    { name = "python-engineio" },
-    { name = "python-multipart" },
-    { name = "python-socketio" },
-    { name = "pyyaml" },
     { name = "requests" },
-    { name = "simple-websocket" },
-    { name = "sniffio" },
     { name = "sqlalchemy" },
-    { name = "starlette" },
-    { name = "typing-extensions" },
-    { name = "typing-inspection" },
-    { name = "urllib3" },
     { name = "uvicorn" },
-    { name = "vbuild" },
-    { name = "virtualenv" },
-    { name = "wait-for2" },
-    { name = "watchfiles" },
-    { name = "websockets" },
-    { name = "wsproto" },
-    { name = "yarl" },
+]
+
+[package.optional-dependencies]
+dev = [
+    { name = "bandit" },
+    { name = "black" },
+    { name = "flake8" },
+    { name = "isort" },
+    { name = "mypy" },
+    { name = "pre-commit" },
+    { name = "pytest" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "aiofiles", specifier = "==24.1.0" },
-    { name = "aiohappyeyeballs", specifier = "==2.6.1" },
-    { name = "aiohttp", specifier = "==3.12.6" },
-    { name = "aiosignal", specifier = "==1.3.2" },
-    { name = "annotated-types", specifier = "==0.7.0" },
-    { name = "anyio", specifier = "==4.9.0" },
-    { name = "attrs", specifier = "==25.3.0" },
-    { name = "bandit", specifier = "==1.8.3" },
-    { name = "bidict", specifier = "==0.23.1" },
-    { name = "black", specifier = "==25.1.0" },
-    { name = "certifi", specifier = "==2025.4.26" },
-    { name = "cfgv", specifier = "==3.4.0" },
-    { name = "charset-normalizer", specifier = "==3.4.2" },
-    { name = "click", specifier = "==8.2.1" },
-    { name = "distlib", specifier = "==0.3.9" },
-    { name = "docutils", specifier = "==0.21.2" },
-    { name = "fastapi", specifier = "==0.115.12" },
-    { name = "filelock", specifier = "==3.18.0" },
-    { name = "flake8", specifier = "==7.2.0" },
-    { name = "frozenlist", specifier = "==1.6.0" },
-    { name = "h11", specifier = "==0.16.0" },
-    { name = "httpcore", specifier = "==1.0.9" },
-    { name = "httptools", specifier = "==0.6.4" },
-    { name = "httpx", specifier = "==0.28.1" },
-    { name = "identify", specifier = "==2.6.12" },
-    { name = "idna", specifier = "==3.10" },
-    { name = "ifaddr", specifier = "==0.2.0" },
-    { name = "isort", specifier = "==6.0.1" },
-    { name = "itsdangerous", specifier = "==2.2.0" },
-    { name = "jinja2", specifier = "==3.1.6" },
-    { name = "markdown2", specifier = "==2.5.3" },
-    { name = "markupsafe", specifier = "==3.0.2" },
-    { name = "multidict", specifier = "==6.4.4" },
-    { name = "mypy", specifier = "==1.16.0" },
-    { name = "nicegui", specifier = "==2.18.0" },
-    { name = "nodeenv", specifier = "==1.9.1" },
-    { name = "openpyxl", specifier = "==3.1.5" },
-    { name = "orjson", specifier = "==3.10.18" },
-    { name = "pandas", specifier = "==2.3.1" },
-    { name = "platformdirs", specifier = "==4.3.8" },
-    { name = "pre-commit", specifier = "==4.2.0" },
-    { name = "propcache", specifier = "==0.3.1" },
-    { name = "pscript", specifier = "==0.7.7" },
-    { name = "pydantic", specifier = "==2.11.5" },
-    { name = "pydantic-core", specifier = "==2.33.2" },
-    { name = "pydantic-settings", specifier = "~=2.9.1" },
-    { name = "pygments", specifier = "==2.19.1" },
-    { name = "pymssql", specifier = "==2.3.9" },
-    { name = "pyodbc", specifier = "==5.2.0" },
-    { name = "python-dotenv", specifier = "==1.1.0" },
-    { name = "python-engineio", specifier = "==4.12.1" },
-    { name = "python-multipart", specifier = "==0.0.20" },
-    { name = "python-socketio", specifier = "==5.13.0" },
-    { name = "pyyaml", specifier = "==6.0.2" },
-    { name = "requests", specifier = "==2.32.3" },
-    { name = "simple-websocket", specifier = "==1.1.0" },
-    { name = "sniffio", specifier = "==1.3.1" },
-    { name = "sqlalchemy", specifier = "==2.0.41" },
-    { name = "starlette", specifier = "==0.46.2" },
-    { name = "typing-extensions", specifier = "==4.13.2" },
-    { name = "typing-inspection", specifier = "==0.4.1" },
-    { name = "urllib3", specifier = "==2.4.0" },
-    { name = "uvicorn", specifier = "==0.34.2" },
-    { name = "vbuild", specifier = "==0.8.2" },
-    { name = "virtualenv", specifier = "==20.31.2" },
-    { name = "wait-for2", specifier = "==0.3.2" },
-    { name = "watchfiles", specifier = "==1.0.5" },
-    { name = "websockets", specifier = "==15.0.1" },
-    { name = "wsproto", specifier = "==1.2.0" },
-    { name = "yarl", specifier = "==1.20.0" },
+    { name = "aiofiles", specifier = ">=24.1.0" },
+    { name = "bandit", marker = "extra == 'dev'", specifier = ">=1.8.0" },
+    { name = "black", marker = "extra == 'dev'", specifier = ">=25.1.0" },
+    { name = "fastapi", specifier = ">=0.115.0" },
+    { name = "flake8", marker = "extra == 'dev'", specifier = ">=7.2.0" },
+    { name = "httpx", specifier = ">=0.28.0" },
+    { name = "isort", marker = "extra == 'dev'", specifier = ">=6.0.0" },
+    { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.16.0" },
+    { name = "nicegui", specifier = ">=2.18.0" },
+    { name = "openpyxl", specifier = ">=3.1.0" },
+    { name = "pandas", specifier = ">=2.3.0" },
+    { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=4.2.0" },
+    { name = "pydantic", specifier = ">=2.11.0" },
+    { name = "pydantic-settings", specifier = ">=2.9.1" },
+    { name = "pymssql", specifier = ">=2.3.0" },
+    { name = "pyodbc", specifier = ">=5.2.0" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0.0" },
+    { name = "python-dotenv", specifier = ">=1.1.0" },
+    { name = "requests", specifier = ">=2.32.0" },
+    { name = "sqlalchemy", specifier = ">=2.0.0" },
+    { name = "uvicorn", specifier = ">=0.34.0" },
 ]
+provides-extras = ["dev"]
 
 [[package]]
 name = "six"

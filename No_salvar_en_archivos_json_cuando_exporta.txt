@@ -1,0 +1,14 @@
+Cambios_no_salvar_en_archivos_json_cuando_exporta.txt
+
+Resumen de cambios realizados
+Se modificaron 23 endpoints en total para evitar el guardado automático en archivos_json:
+
+Archivo	Endpoints modificados
+api_general.py	7 endpoints (unidad_medida, clientes, proveedores, contactos, bancos, cuentas_bancarias, clientes_con_contactos)
+api_nomina.py	16 endpoints (trabajadores, categorías, cargos, tipos, retenciones, pensionados, tasas, colectivos, departamentos, submayores, pagos, grupos salariales, puestos, configuraciones, asignaciones)
+Flujo ahora
+El usuario hace clic en "Exportar a JSON" en la UI
+La UI obtiene los datos de la API (con export=False → no guarda en servidor)
+La UI usa save_to_download_cache() para generar una URL de descarga temporal
+El navegador inicia la descarga → el usuario puede seleccionar la carpeta donde guardar
+No se guarda ningún archivo en archivos_json automáticamente
