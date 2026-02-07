@@ -169,12 +169,25 @@ def is_serializable(value):
 # Llama la funcion que ejecuta query, devuelve datos serializados
 # Llama la funcion que salva los datos en archivo JSON
 def export_table_to_json(
-    db, doctype_name, sqlserver_name, module_name, field_mapping, table_query, save: bool = True
+    db,
+    doctype_name,
+    sqlserver_name,
+    module_name,
+    field_mapping,
+    table_query,
+    save: bool = True,
 ) -> list:
     try:
         result = fetch_table_data(db, field_mapping, table_query)
+        if not result:
+            logging.warning(
+                f"No hay registros para {doctype_name}, no se guardará archivo JSON"
+            )
+            return []
         if save:
-            output_path = save_json_file(doctype_name, result, module_name, sqlserver_name)
+            output_path = save_json_file(
+                doctype_name, result, module_name, sqlserver_name
+            )
             logging.info(f"{doctype_name}.json guardado correctamente en {output_path}")
         return result
 
@@ -191,7 +204,7 @@ def export_table_to_json_paginated(
     field_mapping: List[Tuple[str, Tuple[str, str]]],
     base_query_from: str,
     order_clause: str = "",
-    save: bool = True
+    save: bool = True,
 ) -> List[Dict[str, Any]]:
     """
     Exporta los resultados paginados de una tabla a un archivo JSON.
@@ -280,7 +293,7 @@ def export_table_to_json_paginated(
 
         if save:
             output_path = save_json_file(
-            doctype_name, all_results, module_name, sqlserver_name
+                doctype_name, all_results, module_name, sqlserver_name
             )
             logging.warning(f"{doctype_name}.json guardado en {output_path}")
         return all_results

@@ -45,7 +45,7 @@ async def mostrar_tabla_base(nombre_logico: str, obtener_datos_func):
         ui.notify(f"{nombre_logico} consultado correctamente.")
 
         if not records or not all(isinstance(r, dict) for r in records):
-            ui.notify(f"Datos inválidos para {nombre_logico}", type="negative")
+            ui.notify(f"No hay datos para mostrar en {nombre_logico}", type="warning")
             return
 
         # Lógica de NiceGUI para mostrar tabla (idéntica en ambas vistas)
@@ -115,8 +115,10 @@ async def procesar_tabla_individual_base(
         ui.notify(f"Preparando descarga de {nombre_logico}...")
         result = await obtener_datos_func(nombre_logico)
 
-        if not result:
-            ui.notify(f"No hay datos para exportar en {nombre_logico}.", type="warning")
+        if not result or not result.get("data"):
+            ui.notify(
+                f"No hay artículos para exportar en {nombre_logico}.", type="warning"
+            )
             return
 
         # 1. Obtener nombre real del archivo del mapa específico
@@ -166,6 +168,7 @@ async def procesar_todas_tablas_base(tablas_map, procesar_individual_func):
         dialog.close()
         ui.notify(f"❌ Error al exportar: {str(e)}", type="negative")
 
+
 async def descargar_csv_base(nombre_logico: str, obtener_datos_func, tablas_map):
     """
     Función base para exportar datos individuales a CSV.
@@ -175,8 +178,10 @@ async def descargar_csv_base(nombre_logico: str, obtener_datos_func, tablas_map)
         ui.notify(f"Preparando descarga de {nombre_logico}...")
         result = await obtener_datos_func(nombre_logico)
 
-        if not result:
-            ui.notify(f"No hay datos para exportar en {nombre_logico}.", type="warning")
+        if not result or not result.get("data"):
+            ui.notify(
+                f"No hay artículos para exportar en {nombre_logico}.", type="warning"
+            )
             return
 
         # 1. Obtener nombre real del archivo del mapa específico
@@ -191,7 +196,9 @@ async def descargar_csv_base(nombre_logico: str, obtener_datos_func, tablas_map)
         data = result["data"]
 
         if not data:
-            ui.notify(f"No hay datos para exportar en {nombre_logico}.", type="warning")
+            ui.notify(
+                f"No hay artículos para exportar en {nombre_logico}.", type="warning"
+            )
             return
 
         # Obtener las cabeceras (suponiendo que los datos son una lista de diccionarios)
@@ -208,7 +215,7 @@ async def descargar_csv_base(nombre_logico: str, obtener_datos_func, tablas_map)
         file_name = f"{sqlserver_name}.csv"
 
         # Guardar en el caché de descargas (deberás implementar esta función)
-        csv_data = csv_bytes.getvalue().encode('utf-8')
+        csv_data = csv_bytes.getvalue().encode("utf-8")
 
         download_url = save_to_download_cache(csv_data, file_name)
 
@@ -225,6 +232,7 @@ async def descargar_csv_base(nombre_logico: str, obtener_datos_func, tablas_map)
 
 # --- Generación de Interfaz de Usuario ---
 
+
 def render_module_ui(
     titulo: str,
     subtitulo: str,
@@ -232,7 +240,7 @@ def render_module_ui(
     mostrar_func,
     exportar_individual_func,
     exportar_todas_func,
-    descargar_csv_func = None,  # Indica que este boton es opcional,
+    descargar_csv_func=None,  # Indica que este boton es opcional,
 ):
     """
     Genera la interfaz de usuario repetitiva (títulos, botón de exportar todo, lista de tablas).
@@ -269,10 +277,16 @@ def render_module_ui(
                     ).props("color=green outline size=sm icon=cloud_download")
 
                     # Lista de nombres lógicos que deben mostrar el botón
-                    nombres_con_csv = ["Facturas de Compra", "Facturas de Venta", "Existencias"]
+                    nombres_con_csv = [
+                        "Facturas de Compra",
+                        "Facturas de Venta",
+                        "Existencias",
+                    ]
 
                     if nombre_logico in nombres_con_csv:
                         ui.button(
                             "Exportar a CSV",
                             on_click=lambda n=nombre_logico: descargar_csv_func(n),
-                        ).props("color=orange outline size=sm icon=download").classes("ml-2")
+                        ).props("color=orange outline size=sm icon=download").classes(
+                            "ml-2"
+                        )
