@@ -19,21 +19,26 @@ PAGINATION_THRESHOLD = (
 DEFAULT_PAGE_SIZE = 1000
 
 # UI Modules Config(modulo:icon)
+# Para sub-módulos, usar: "Modulo Padre": {"icon": "icon_name", "children": {"Sub-módulo": "icon"}}
 MODULES = {
     "Inicio": "home",
     "General": "dashboard",
     "Cuentas": "account_balance_wallet",
     "Activos Fijos": "precision_manufacturing",
-    "Almacen": "warehouse",
     "Cobros y Pagos": "receipt_long",
-    "Contabilidad General": "account_balance_wallet",
+    # "Contabilidad General": "account_balance_wallet",
     "Costo": "payments",
     "Ventas": "sell",
     "Compras": "shopping_cart",
-    "Inventarios": "inventory_2",
+    "Inventarios": {
+        "icon": "inventory_2",
+        "children": {
+            "Almacen": "warehouse",
+            "Productos": "category",
+        },
+    },
     "Nómina": "payments",
-    "Productos": "category",
-    "Recursos Humanos": "people_alt",
+    # "Recursos Humanos": "people_alt",
 }
 
 DEFAULT_MODULE = "Inicio"

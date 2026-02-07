@@ -310,7 +310,7 @@ def get_maestro_retenciones(db, export=False):
 
 
 # Para obtener loa pensionados
-def get_pensionados(db):
+def get_pensionados(db, export=False):
     doctype_name = "Customer"
     sqlserver_name = "SNOMANTPENS"
     module_name = "Selling"
@@ -540,6 +540,7 @@ def get_submayor_salarios_no_reclamados(db, export=False):
         field_mapping=field_mapping,
         base_query_from=base_query_from,
         order_clause=order_clause,
+        save=export,
     )
 
 
@@ -928,7 +929,7 @@ def get_asignacion_contribuciones_impuestos(db, export: bool = False):
         (
             "employee",
             (
-                "t.CPTrabNombre + ' ' + t.CPTrabPriApellido + ' ' + t.CPTrabSegApellido",
+                "t.CPTrabNombre + ' ' + t.CPTrabPriApellido",
                 "string",
             ),
         ),

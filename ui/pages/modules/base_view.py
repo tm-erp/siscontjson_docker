@@ -245,6 +245,13 @@ def _set_active_table(row_element, all_rows):
     row_element.classes("bg-blue-400 border-l-4 border-primary shadow-md")
 
 
+def _clear_active_table(row_element):
+    """
+    Desmarca una tabla eliminando el resaltado.
+    """
+    row_element.classes(remove="bg-blue-400 border-l-4 border-primary shadow-md")
+
+
 def render_module_ui(
     titulo: str,
     subtitulo: str,
@@ -282,11 +289,17 @@ def render_module_ui(
 
                 async def _mostrar_con_highlight(n, row_element, rows):
                     _set_active_table(row_element, rows)
-                    await mostrar_func(n)
+                    try:
+                        await mostrar_func(n)
+                    finally:
+                        _clear_active_table(row_element)
 
                 async def _exportar_con_highlight(n, row_element, rows):
                     _set_active_table(row_element, rows)
-                    await exportar_individual_func(n)
+                    try:
+                        await exportar_individual_func(n)
+                    finally:
+                        _clear_active_table(row_element)
 
                 with ui.row():
                     ui.button(
