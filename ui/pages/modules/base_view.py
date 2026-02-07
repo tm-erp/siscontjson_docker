@@ -233,6 +233,18 @@ async def descargar_csv_base(nombre_logico: str, obtener_datos_func, tablas_map)
 # --- Generación de Interfaz de Usuario ---
 
 
+def _set_active_table(row_element, all_rows):
+    """
+    Marca una tabla como activa resaltándola con color y desmarca las demás.
+    """
+    # Desmarcar todas las filas primero
+    for row in all_rows:
+        row.classes(remove="bg-blue-400 border-l-4 border-primary shadow-md")
+
+    # Marcar la fila seleccionada con azul más intenso
+    row_element.classes("bg-blue-400 border-l-4 border-primary shadow-md")
+
+
 def render_module_ui(
     titulo: str,
     subtitulo: str,
@@ -258,22 +270,37 @@ def render_module_ui(
     ).classes("mt-4 mb-6")
 
     # Display table names and buttons
+    all_table_rows = []
     with ui.column().classes("mt-6 gap-2 w-full"):
         for nombre_logico in tablas_map.keys():
-            with ui.row().classes("items-center justify-between w-full"):
+            # Fila con efecto hover y padding para que se vea mejor
+            table_row = ui.row().classes(
+                "items-center justify-between w-full px-3 py-2 rounded cursor-pointer transition-all duration-200 hover:bg-blue-200"
+            )
+            with table_row:
                 ui.label(nombre_logico).classes("text-md font-semibold")
+
+                async def _mostrar_con_highlight(n, row_element, rows):
+                    _set_active_table(row_element, rows)
+                    await mostrar_func(n)
+
+                async def _exportar_con_highlight(n, row_element, rows):
+                    _set_active_table(row_element, rows)
+                    await exportar_individual_func(n)
 
                 with ui.row():
                     ui.button(
                         "Visualizar datos",
-                        # Aquí usamos la función de mostrar del módulo específico
-                        on_click=lambda n=nombre_logico: mostrar_func(n),
+                        on_click=lambda n=nombre_logico, r=table_row, rows=all_table_rows: _mostrar_con_highlight(
+                            n, r, rows
+                        ),
                     ).props("color=primary outline size=sm")
 
                     ui.button(
                         "Exportar a JSON",
-                        # Aquí usamos la función de exportar individual del módulo específico
-                        on_click=lambda n=nombre_logico: exportar_individual_func(n),
+                        on_click=lambda n=nombre_logico, r=table_row, rows=all_table_rows: _exportar_con_highlight(
+                            n, r, rows
+                        ),
                     ).props("color=green outline size=sm icon=cloud_download")
 
                     # Lista de nombres lógicos que deben mostrar el botón
@@ -290,3 +317,4 @@ def render_module_ui(
                         ).props("color=orange outline size=sm icon=download").classes(
                             "ml-2"
                         )
+            all_table_rows.append(table_row)
