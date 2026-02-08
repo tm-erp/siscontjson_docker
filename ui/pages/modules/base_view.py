@@ -4,7 +4,6 @@ import asyncio
 import json
 import csv
 import io
-import os
 
 from collections import OrderedDict
 from nicegui.functions import javascript
@@ -13,85 +12,6 @@ from utils.download_manager import save_to_download_cache
 
 from collections import OrderedDict
 from services.cp_client import get_current_conexion_params
-
-
-async def _pedir_carpeta_destino() -> str | None:
-    """Muestra un diálogo para que el usuario ingrese la carpeta de destino."""
-    result = {"carpeta": None, "accepted": False}
-
-    with ui.dialog() as dialog, ui.card().classes("w-[500px]"):
-        ui.label("Seleccionar carpeta de destino").classes("text-lg font-bold mb-4")
-        ui.label("Ingrese la ruta completa donde desea guardar todos los archivos:")
-
-        carpeta_input = ui.input(
-            label="Carpeta de destino",
-            placeholder="/app/exportaciones",
-            value="/app/exportaciones",
-        ).classes("w-full")
-
-        with ui.row().classes("justify-end w-full mt-4 gap-2"):
-            ui.button("Cancelar", on_click=lambda: dialog.close()).props("color=grey")
-
-            def on_accept():
-                result["carpeta"] = carpeta_input.value
-                result["accepted"] = True
-                dialog.close()
-
-            ui.button("Aceptar", on_click=on_accept).props("color=primary")
-
-    dialog.open()
-    await dialog.wait_for_close()
-
-    if result["accepted"] and result["carpeta"]:
-        return result["carpeta"]
-    return None
-
-
-async def _guardar_archivo_en_carpeta(carpeta: str, file_name: str, content: str):
-    """Guarda el contenido en un archivo en la carpeta especificada."""
-    import traceback
-
-    # Expandir ~ a la ruta home del usuario
-    carpeta_expandida = os.path.expanduser(carpeta)
-    carpeta_absoluta = os.path.abspath(carpeta_expandida)
-
-    print(f"[DEBUG] Intentando guardar en carpeta: {carpeta_absoluta}")
-    print(f"[DEBUG] Carpeta original: {carpeta}")
-
-    try:
-        # Crear la carpeta si no existe (incluye carpetas padre)
-        os.makedirs(carpeta_absoluta, mode=0o755, exist_ok=True)
-        print(f"[DEBUG] Carpeta creada o ya existía: {carpeta_absoluta}")
-    except PermissionError as e:
-        error_msg = f"Permiso denegado al crear carpeta: {carpeta_absoluta}"
-        print(f"[ERROR] {error_msg}")
-        print(traceback.format_exc())
-        raise Exception(error_msg)
-    except OSError as e:
-        error_msg = f"Error OS al crear carpeta {carpeta_absoluta}: {e}"
-        print(f"[ERROR] {error_msg}")
-        print(traceback.format_exc())
-        raise Exception(error_msg)
-
-    # Limpiar el nombre del archivo
-    file_name = file_name.replace("/", "_").replace("\\", "_").replace(":", "_")
-    file_path = os.path.join(carpeta_absoluta, file_name)
-    print(f"[DEBUG] Guardando archivo en: {file_path}")
-
-    try:
-        with open(file_path, "w", encoding="utf-8") as f:
-            f.write(content)
-        print(f"[DEBUG] Archivo guardado exitosamente: {file_path}")
-    except PermissionError as e:
-        error_msg = f"Permiso denegado al escribir archivo: {file_path}"
-        print(f"[ERROR] {error_msg}")
-        raise Exception(error_msg)
-    except Exception as e:
-        error_msg = f"Error al escribir archivo {file_path}: {e}"
-        print(f"[ERROR] {error_msg}")
-        raise Exception(error_msg)
-
-    return file_path
 
 
 # --- Funciones de Utilidad ---
@@ -424,13 +344,12 @@ def render_module_ui(
     ui.label(subtitulo).classes("text-sm mb-4")
     ui.separator()
 
-    # Botón para exportar todas las tablas
-    ui.button(
-        "Exportar todas las tablas a JSON",
-        on_click=exportar_todas_func,
-    ).props(
-        "color=blue size=md icon=cloud_download"
-    ).classes("mt-4 mb-6")
+    # Botón para exportar todas las tablas (solo si hay más de 1)
+    if len(tablas_map) > 1:
+        ui.button(
+            "Exportar todas las tablas a JSON",
+            on_click=exportar_todas_func,
+        ).props("color=blue size=md icon=cloud_download").classes("mt-4 mb-6")
 
     # Display table names and buttons
     all_table_rows = []

@@ -16,7 +16,12 @@ TABLAS_ACTIVOS = {
 }
 
 
-async def obtener_datos_tabla(nombre_tabla: str, modulo: str | None = None) -> Any:
+async def obtener_datos_tabla(
+    nombre_tabla: str, modulo: str | None = None, export: bool = False
+) -> Any:
+    """
+    Función de fachada para CP que llama a la función base.
+    """
     modulo = modulo or "activos_fijos"
     endpoint = TABLAS_ACTIVOS[nombre_tabla]
     base_url = get_module_api_url(modulo)

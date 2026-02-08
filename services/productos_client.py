@@ -9,7 +9,7 @@ TABLAS_PRODUCTOS = {
     "Productos y Servicios": "productos",
     "Existencias": "existencias",
     "Lista de precios": "lista_de_precios",
-    "Lista de precios por productos y servicios": "precios_productos_lista"
+    "Lista de precios por productos y servicios": "precios_productos_lista",
 }
 
 # Mapeando con el nombre de las tablas de sqlserver (Datos únicos)
@@ -18,16 +18,18 @@ DOCTYPE_NAME_MAP = {
     "Productos y Servicios": "Item",
     "Existencias": "Stock Reconciliation",
     "Lista de precios": "Price List",
-    "Lista de precios por productos y servicios": "Item Price"
+    "Lista de precios por productos y servicios": "Item Price",
 }
 
 # Reemplazar la definición por la importación directa de la base
 get_current_conexion_params = get_current_conexion_params
 
 
-async def obtener_datos_tabla(nombre_tabla: str, modulo: str | None = None) -> Any:
+async def obtener_datos_tabla(
+    nombre_tabla: str, modulo: str | None = None, export: bool = False
+) -> Any:
     """
-    Función de fachada para General que llama a la función base.
+    Función de fachada para Productos que llama a la función base.
     """
     return await obtener_datos_tabla_base(
         nombre_tabla=nombre_tabla,
@@ -35,4 +37,5 @@ async def obtener_datos_tabla(nombre_tabla: str, modulo: str | None = None) -> A
         doctype_map=DOCTYPE_NAME_MAP,
         default_module="producto",
         modulo=modulo,
+        export=export,
     )

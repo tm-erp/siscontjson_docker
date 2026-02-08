@@ -68,25 +68,39 @@ def show():
         server_ip=app.storage.user.get("server_ip_display", ""), on_logout=handle_logout
     )
 
-    # Contenedor para el contenido del módulo - se guarda como variable local
-    # no en app.storage.user para evitar problemas de serialización
+    # Contenedores para sidebar y contenido
+    sidebar_container = None
     content_container = None
+
+    def refresh_sidebar(module_name: str):
+        """Refresca el sidebar con el módulo seleccionado."""
+        nonlocal sidebar_container
+        if sidebar_container:
+            sidebar_container.clear()
+            with sidebar_container:
+                sidebar.create_sidebar(
+                    selected_module=module_name, on_module_select=handle_module_change
+                )
 
     def handle_module_change(module_name: str):
         """Handler interno para cambio de módulo que tiene acceso al contenedor."""
         nonlocal content_container
         # Actualiza el módulo actual en el almacenamiento de usuario
         app.storage.user["current_view"] = module_name
+        # Refrescar el sidebar para mostrar la nueva selección
+        refresh_sidebar(module_name)
         # Renderizar el nuevo contenido
         if content_container:
             render_module_content(content_container, module_name)
 
     # Área principal de contenido (barra lateral + contenido del módulo)
     with ui.row().classes("w-full h-[calc(100vh-4rem)]"):
-        # Crea la barra lateral
-        sidebar.create_sidebar(
-            selected_module=current_module, on_module_select=handle_module_change
-        )
+        # Contenedor para la barra lateral (para poder refrescarlo)
+        with ui.column().classes("w-64 h-full") as sidebar_container:
+            # Crea la barra lateral
+            sidebar.create_sidebar(
+                selected_module=current_module, on_module_select=handle_module_change
+            )
 
         # Contenedor para el contenido del módulo (único por cliente)
         with ui.column().classes(

@@ -35,9 +35,7 @@ async def procesar_tabla_individual(nombre_logico: str):
     async def datos_export(nombre: str):
         return await obtener_datos_tabla(nombre, export=True)
 
-    await procesar_tabla_individual_base(
-        nombre_logico, datos_export, TABLAS_GENERAL, "General"
-    )
+    await procesar_tabla_individual_base(nombre_logico, datos_export, TABLAS_GENERAL)
 
 
 async def procesar_todas_tablas():

@@ -15,7 +15,9 @@ TABLAS_CUENTAS = {
 }
 
 
-async def obtener_datos_tabla(nombre_tabla: str, modulo: str | None = None) -> Any:
+async def obtener_datos_tabla(
+    nombre_tabla: str, modulo: str | None = None, export: bool = False
+) -> Any:
     modulo = modulo or "cuentas"
     endpoint = TABLAS_CUENTAS[nombre_tabla]
     base_url = get_module_api_url(modulo)
