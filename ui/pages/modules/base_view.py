@@ -42,7 +42,7 @@ async def mostrar_tabla_base(nombre_logico: str, obtener_datos_func):
         records = result["data"]
         doctype_name = result["doctype"]
 
-        ui.notify(f"{nombre_logico} consultado correctamente.")
+        # ui.notify(f"{nombre_logico} consultado correctamente.")
 
         if not records or not all(isinstance(r, dict) for r in records):
             ui.notify(f"No hay datos para mostrar en {nombre_logico}", type="warning")
@@ -112,7 +112,7 @@ async def procesar_tabla_individual_base(
     Acepta la función de obtener datos y el diccionario de mapeo de tablas (TABLAS_NOMINA/GENERAL).
     """
     try:
-        ui.notify(f"Preparando descarga de {nombre_logico}...")
+        # ui.notify(f"Preparando descarga de {nombre_logico}...")
         result = await obtener_datos_func(nombre_logico)
 
         if not result or not result.get("data"):
@@ -138,7 +138,7 @@ async def procesar_tabla_individual_base(
 
         ui.run_javascript(f'window.location.href = "{download_url}"')
 
-        ui.notify(f"Descargando {file_name}...", type="positive")
+        # ui.notify(f"Descargando {file_name}...", type="positive")
 
     except Exception as e:
         ui.notify(f"Error al exportar {nombre_logico}: {e}", type="negative")
@@ -175,7 +175,7 @@ async def descargar_csv_base(nombre_logico: str, obtener_datos_func, tablas_map)
     Acepta la función de obtener datos y el diccionario de mapeo de tablas (TABLAS_NOMINA/GENERAL).
     """
     try:
-        ui.notify(f"Preparando descarga de {nombre_logico}...")
+        # ui.notify(f"Preparando descarga de {nombre_logico}...")
         result = await obtener_datos_func(nombre_logico)
 
         if not result or not result.get("data"):

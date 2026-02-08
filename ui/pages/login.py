@@ -44,7 +44,7 @@ def connection_form():
                         password=password_input.value,
                         database=database_input.value,
                     )
-                    print("Entra a params")
+                    # print("Entra a params")
                     # Probar la conexión usando SQLAlchemy
                     if test_connection(params):
                         # Crear DatabaseManager para la sesión del usuario
