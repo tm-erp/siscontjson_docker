@@ -21,11 +21,17 @@ async def procesar_tabla_individual(nombre_logico: str):
         nombre_logico, obtener_datos_tabla, TABLAS_PRODUCTOS
     )
 
+
 async def procesar_todas_tablas():
-    await procesar_todas_tablas_base(TABLAS_PRODUCTOS, procesar_tabla_individual)
+    async def datos_export(nombre: str):
+        return await obtener_datos_tabla(nombre, export=True)
+
+    await procesar_todas_tablas_base(TABLAS_PRODUCTOS, datos_export, "Productos")
+
 
 async def descargar_csv(nombre_logico: str):
     await descargar_csv_base(nombre_logico, obtener_datos_tabla, TABLAS_PRODUCTOS)
+
 
 # 2. Reemplazar la función 'show' con el renderizador base
 def show():

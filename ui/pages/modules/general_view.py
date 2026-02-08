@@ -35,12 +35,17 @@ async def procesar_tabla_individual(nombre_logico: str):
     async def datos_export(nombre: str):
         return await obtener_datos_tabla(nombre, export=True)
 
-    await procesar_tabla_individual_base(nombre_logico, datos_export, TABLAS_GENERAL)
+    await procesar_tabla_individual_base(
+        nombre_logico, datos_export, TABLAS_GENERAL, "General"
+    )
 
 
 async def procesar_todas_tablas():
-    # Nota: procesar_todas_tablas_base necesita la *función* individual adaptada
-    await procesar_todas_tablas_base(TABLAS_GENERAL, procesar_tabla_individual)
+    # Pasa obtener_datos_tabla directamente para que la función base maneje la exportación
+    async def datos_export(nombre: str):
+        return await obtener_datos_tabla(nombre, export=True)
+
+    await procesar_todas_tablas_base(TABLAS_GENERAL, datos_export, "General")
 
 
 # 2. Reemplazar la función 'show' con el renderizador base

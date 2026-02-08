@@ -49,7 +49,10 @@ async def procesar_tabla_individual(nombre_logico: str):
 
 
 async def procesar_todas_tablas():
-    await procesar_todas_tablas_base(TABLAS_CP, procesar_tabla_individual)
+    async def datos_export(nombre: str):
+        return await obtener_datos_tabla(nombre, export=True)
+
+    await procesar_todas_tablas_base(TABLAS_CP, datos_export)
 
 
 async def descargar_csv(nombre_logico: str):

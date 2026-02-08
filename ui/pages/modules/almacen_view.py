@@ -8,17 +8,24 @@ from .base_view import (
 
 from services.almacen_client import TABLAS_ALMACEN, obtener_datos_tabla
 
+
 # 1. Adaptar las funciones base a General
 async def mostrar_tabla(nombre_logico: str):
     await mostrar_tabla_base(nombre_logico, obtener_datos_tabla)
+
 
 async def procesar_tabla_individual(nombre_logico: str):
     await procesar_tabla_individual_base(
         nombre_logico, obtener_datos_tabla, TABLAS_ALMACEN
     )
 
+
 async def procesar_todas_tablas():
-    await procesar_todas_tablas_base(TABLAS_ALMACEN, procesar_tabla_individual)
+    async def datos_export(nombre: str):
+        return await obtener_datos_tabla(nombre, export=True)
+
+    await procesar_todas_tablas_base(TABLAS_ALMACEN, datos_export)
+
 
 # 2. Reemplazar la función 'show' con el renderizador base
 def show():

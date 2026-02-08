@@ -4,14 +4,94 @@ import asyncio
 import json
 import csv
 import io
+import os
 
 from collections import OrderedDict
 from nicegui.functions import javascript
-from nicegui import ui
+from nicegui import ui, app
 from utils.download_manager import save_to_download_cache
 
 from collections import OrderedDict
 from services.cp_client import get_current_conexion_params
+
+
+async def _pedir_carpeta_destino() -> str | None:
+    """Muestra un diálogo para que el usuario ingrese la carpeta de destino."""
+    result = {"carpeta": None, "accepted": False}
+
+    with ui.dialog() as dialog, ui.card().classes("w-[500px]"):
+        ui.label("Seleccionar carpeta de destino").classes("text-lg font-bold mb-4")
+        ui.label("Ingrese la ruta completa donde desea guardar todos los archivos:")
+
+        carpeta_input = ui.input(
+            label="Carpeta de destino",
+            placeholder="/app/exportaciones",
+            value="/app/exportaciones",
+        ).classes("w-full")
+
+        with ui.row().classes("justify-end w-full mt-4 gap-2"):
+            ui.button("Cancelar", on_click=lambda: dialog.close()).props("color=grey")
+
+            def on_accept():
+                result["carpeta"] = carpeta_input.value
+                result["accepted"] = True
+                dialog.close()
+
+            ui.button("Aceptar", on_click=on_accept).props("color=primary")
+
+    dialog.open()
+    await dialog.wait_for_close()
+
+    if result["accepted"] and result["carpeta"]:
+        return result["carpeta"]
+    return None
+
+
+async def _guardar_archivo_en_carpeta(carpeta: str, file_name: str, content: str):
+    """Guarda el contenido en un archivo en la carpeta especificada."""
+    import traceback
+
+    # Expandir ~ a la ruta home del usuario
+    carpeta_expandida = os.path.expanduser(carpeta)
+    carpeta_absoluta = os.path.abspath(carpeta_expandida)
+
+    print(f"[DEBUG] Intentando guardar en carpeta: {carpeta_absoluta}")
+    print(f"[DEBUG] Carpeta original: {carpeta}")
+
+    try:
+        # Crear la carpeta si no existe (incluye carpetas padre)
+        os.makedirs(carpeta_absoluta, mode=0o755, exist_ok=True)
+        print(f"[DEBUG] Carpeta creada o ya existía: {carpeta_absoluta}")
+    except PermissionError as e:
+        error_msg = f"Permiso denegado al crear carpeta: {carpeta_absoluta}"
+        print(f"[ERROR] {error_msg}")
+        print(traceback.format_exc())
+        raise Exception(error_msg)
+    except OSError as e:
+        error_msg = f"Error OS al crear carpeta {carpeta_absoluta}: {e}"
+        print(f"[ERROR] {error_msg}")
+        print(traceback.format_exc())
+        raise Exception(error_msg)
+
+    # Limpiar el nombre del archivo
+    file_name = file_name.replace("/", "_").replace("\\", "_").replace(":", "_")
+    file_path = os.path.join(carpeta_absoluta, file_name)
+    print(f"[DEBUG] Guardando archivo en: {file_path}")
+
+    try:
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write(content)
+        print(f"[DEBUG] Archivo guardado exitosamente: {file_path}")
+    except PermissionError as e:
+        error_msg = f"Permiso denegado al escribir archivo: {file_path}"
+        print(f"[ERROR] {error_msg}")
+        raise Exception(error_msg)
+    except Exception as e:
+        error_msg = f"Error al escribir archivo {file_path}: {e}"
+        print(f"[ERROR] {error_msg}")
+        raise Exception(error_msg)
+
+    return file_path
 
 
 # --- Funciones de Utilidad ---
@@ -145,28 +225,104 @@ async def procesar_tabla_individual_base(
         print(f"Error al exportar {nombre_logico}: {e}")
 
 
-async def procesar_todas_tablas_base(tablas_map, procesar_individual_func):
+async def procesar_todas_tablas_base(
+    tablas_map, obtener_datos_func, nombre_modulo: str = "export"
+):
     """
-    Función base para exportar todas las tablas.
-    Acepta el mapa de tablas (TABLAS_NOMINA/GENERAL) y la función de procesamiento individual.
+    Función base para exportar todas las tablas como un ZIP descargable.
+    Crea un ZIP en memoria con todos los JSON y lo descarga via navegador.
     """
+    import zipfile
+    import time
+
+    # 1. Mostrar diálogo de progreso
     with ui.dialog() as dialog, ui.card():
         ui.label("Exportando todas las tablas...").classes("text-lg font-semibold")
+        progreso_label = ui.label("Iniciando...").classes("text-sm mt-2")
         ui.spinner(size="lg", color="green")
 
     dialog.open()
 
     try:
-        # Itera sobre el mapa de tablas específico
-        for nombre_logico in tablas_map.keys():
-            await procesar_individual_func(nombre_logico)
-            await asyncio.sleep(0.1)
+        total_tablas = len(tablas_map)
+        exportadas = 0
+        errores = []
+
+        # Crear archivo ZIP en memoria
+        zip_buffer = io.BytesIO()
+
+        with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zipf:
+            # Itera sobre el mapa de tablas específico
+            for idx, nombre_logico in enumerate(tablas_map.keys(), 1):
+                try:
+                    progreso_label.set_text(
+                        f"Exportando {nombre_logico} ({idx}/{total_tablas})..."
+                    )
+
+                    # Obtener datos
+                    result = await obtener_datos_func(nombre_logico)
+
+                    if not result or not result.get("data"):
+                        errores.append(f"{nombre_logico}: Sin datos")
+                        continue
+
+                    # Obtener nombre real del archivo del mapa
+                    sqlserver_name = tablas_map.get(nombre_logico, "error_nombre_tabla")
+                    if sqlserver_name == "error_nombre_tabla":
+                        errores.append(f"{nombre_logico}: Error de mapeo")
+                        continue
+
+                    # Generar JSON y agregar al ZIP
+                    json_str = _generate_json_string(result["data"], result["doctype"])
+                    file_name = f"{sqlserver_name}.json"
+
+                    zipf.writestr(file_name, json_str)
+                    exportadas += 1
+
+                except Exception as e:
+                    errores.append(f"{nombre_logico}: {str(e)}")
+                    print(f"Error al exportar {nombre_logico}: {e}")
+
+                await asyncio.sleep(0.01)
+
+        # Preparar descarga del ZIP
+        zip_buffer.seek(0)
+        zip_bytes = zip_buffer.getvalue()
+
+        # Nombre del ZIP con nombre del módulo y timestamp
+        timestamp = time.strftime("%Y%m%d_%H%M%S")
+        # Normalizar nombre del módulo (quitar espacios y caracteres especiales)
+        nombre_modulo_clean = (
+            nombre_modulo.replace(" ", "_").replace("/", "_").replace("\\", "_")
+        )
+        zip_filename = f"{nombre_modulo_clean}_{timestamp}.zip"
+
+        download_url = save_to_download_cache(zip_bytes, zip_filename)
+        ui.run_javascript(f'window.location.href = "{download_url}"')
 
         dialog.close()
-        ui.notify("✅ Todas las tablas fueron exportadas exitosamente", type="positive")
+
+        # Mensaje de éxito al finalizar
+        if exportadas == total_tablas:
+            ui.notify(
+                f"✅ {exportadas} tablas exportadas exitosamente",
+                type="positive",
+            )
+        elif exportadas > 0:
+            ui.notify(
+                f"⚠️ {exportadas} de {total_tablas} tablas exportadas. Algunas tuvieron errores.",
+                type="warning",
+            )
+        else:
+            ui.notify("❌ No se pudo exportar ninguna tabla", type="negative")
+
+        if errores:
+            print("Errores de exportación:", errores)
+
     except Exception as e:
         dialog.close()
         ui.notify(f"❌ Error al exportar: {str(e)}", type="negative")
+        print(f"Error general en exportación: {e}")
 
 
 async def descargar_csv_base(nombre_logico: str, obtener_datos_func, tablas_map):

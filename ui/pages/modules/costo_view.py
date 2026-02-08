@@ -16,6 +16,7 @@ from .base_view import (
     render_module_ui,
 )
 
+
 # Funcion Helper para generar el string JSON
 # definida aqui para que  "obtener_datos_tabla" devuelve los datos puros (list[dict])
 def _generate_json_string(data_list: list, doctype: str) -> str:
@@ -25,20 +26,27 @@ def _generate_json_string(data_list: list, doctype: str) -> str:
     content = OrderedDict()
     content["doctype"] = doctype
     content["data"] = data_list
-    return json.dumps(content, indent=4, ensure_ascii=False)    #FIN DEL NUEVO
+    return json.dumps(content, indent=4, ensure_ascii=False)  # FIN DEL NUEVO
 
 
 # Muestra ventana modal con los datos de la tabla especificada
 async def mostrar_tabla(nombre_logico: str):
     await mostrar_tabla_base(nombre_logico, obtener_datos_tabla)
 
+
 # funcion que obtiene los datos de la tabla especificada
 async def procesar_tabla_individual(nombre_logico: str):
     await procesar_tabla_individual_base(
-        nombre_logico, obtener_datos_tabla, TABLAS_COSTO)
+        nombre_logico, obtener_datos_tabla, TABLAS_COSTO
+    )
+
 
 async def procesar_todas_tablas():
-    await procesar_todas_tablas_base(TABLAS_COSTO, procesar_tabla_individual)
+    async def datos_export(nombre: str):
+        return await obtener_datos_tabla(nombre, export=True)
+
+    await procesar_todas_tablas_base(TABLAS_COSTO, datos_export, "Costo")
+
 
 def show():
     render_module_ui(
@@ -50,7 +58,8 @@ def show():
         exportar_todas_func=procesar_todas_tablas,
     )
 
-'''    ui.label("Costo").classes("text-2xl font-bold mb-1")
+
+"""    ui.label("Costo").classes("text-2xl font-bold mb-1")
     ui.label("Consulta y genera los JSON de las tablas del modulo "
              "Costo").classes(
         "text-sm mb-4")
@@ -86,4 +95,4 @@ def show():
                             n=nombre_logico: procesar_tabla_individual(n)
                     ).props(
                         "color=green outline size=sm icon=cloud_download")
-'''
+"""
