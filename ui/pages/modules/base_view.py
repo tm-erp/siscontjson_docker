@@ -109,7 +109,7 @@ async def procesar_tabla_individual_base(
 ):
     """
     Función base para exportar datos individuales.
-    Acepta la función de obtener datos y el diccionario de mapeo de tablas (TABLAS_NOMINA/GENERAL).
+    Acepta la función de obtener datos y el diccionario de mapeo de tablas.
     """
     try:
         # ui.notify(f"Preparando descarga de {nombre_logico}...")
@@ -227,17 +227,22 @@ async def procesar_todas_tablas_base(
             ui.notify(
                 f"✅ {exportadas} tablas exportadas exitosamente",
                 type="positive",
+                timeout=5000,
             )
         elif exportadas > 0:
             ui.notify(
                 f"⚠️ {exportadas} de {total_tablas} tablas exportadas. Algunas tuvieron errores.",
                 type="warning",
+                timeout=5000,
             )
         else:
-            ui.notify("❌ No se pudo exportar ninguna tabla", type="negative")
+            ui.notify(
+                "❌ No se pudo exportar ninguna tabla", type="negative", timeout=5000
+            )
 
         if errores:
             print("Errores de exportación:", errores)
+            await asyncio.sleep(0.5)
 
     except Exception as e:
         dialog.close()

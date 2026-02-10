@@ -31,7 +31,7 @@ async def mostrar_tabla(nombre_logico: str):
     await mostrar_tabla_base(nombre_logico, datos_view)
 
 
-# # La función 'procesar_tabla_individual' llama a la base con la función de datos y el mapa de Nómina.
+# La función 'procesar_tabla_individual' llama a la base con la función de datos y el mapa de Nómina.
 # async def procesar_tabla_individual(nombre_logico: str):
 #     async def obtener_datos_segun_export(nombre: str):
 #         # Para esta tabla específica, export=True

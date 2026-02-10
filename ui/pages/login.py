@@ -3,7 +3,7 @@ from datetime import datetime
 from nicegui import app, ui
 
 from config import get_settings
-from db.db_connection import create_db_managerAlchemy, test_connection
+from db.db_connection import test_connection
 from db.db_manager import ConexionParams
 
 
@@ -47,13 +47,9 @@ def connection_form():
                     # print("Entra a params")
                     # Probar la conexión usando SQLAlchemy
                     if test_connection(params):
-                        # Crear DatabaseManager para la sesión del usuario
-                        db_manager = create_db_managerAlchemy(params)
-
                         # Guardar estado persistente del usuario en sesión
                         app.storage.user["connected"] = True
                         app.storage.user["db_params"] = params.model_dump()
-                        app.storage.user["db_manager"] = db_manager
                         app.storage.user["ip_server"] = ip_input.value
                         app.storage.user["server_ip_display"] = ip_input.value
                         app.storage.user["last_activity"] = datetime.now().isoformat()
@@ -68,7 +64,6 @@ def connection_form():
                     # Limpiar estado de sesión del usuario en caso de error
                     app.storage.user["connected"] = False
                     app.storage.user["db_params"] = None
-                    app.storage.user["db_manager"] = None
                     ui.notify("Error al conectar", type="negative")
                 finally:
                     spinner.delete()  # Esto oculta el spinner siempre
